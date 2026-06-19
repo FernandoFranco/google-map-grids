@@ -64,6 +64,63 @@ export function MyComponent(props: PropsWithChildren<MyComponentProps>) {
 }
 ```
 
+## Component Architecture
+
+### Render vs Editor
+
+Each map feature has two separate components with distinct responsibilities:
+
+**Render components** — receive ready data, display it, return `null`. No interactivity. Lightweight. Named after the feature (e.g. `AreaRestriction`, `DrawnAreas`, `Markers`).
+
+**Editor components** — capture user interactions (clicks, drag, drawing). Emit structured data via callbacks. Isolate all input complexity. Named with `Editor` suffix (e.g. `AreaRestrictionEditor`, `DrawnAreaEditor`, `MarkerEditor`).
+
+```tsx
+<GoogleMapsProvider apiKey={key}>
+  <GoogleMap center={...} zoom={...}>
+    {/* render: display existing data */}
+    <AreaRestriction bounds={bounds} />
+    <DrawnAreas areas={areas} />
+    <Markers items={markers} />
+
+    {/* editor: capture new data */}
+    <DrawnAreaEditor onComplete={(area) => addArea(area)} />
+  </GoogleMap>
+</GoogleMapsProvider>
+```
+
+### MapContext
+
+`GoogleMap` provides the `google.maps.Map` instance via `MapContext`. All layer components (render and editor) consume it via `useMap()`, which throws if called outside a `<GoogleMap>`.
+
+```
+GoogleMapsProvider  →  GoogleMapsContext  { isLoaded, loadError }
+  └── GoogleMap     →  MapContext         { map: google.maps.Map }
+        └── layer components consume useMap()
+```
+
+### Layer component template
+
+Every layer component follows this pattern — no DOM, imperative lifecycle via `useEffect`:
+
+```tsx
+export function MyLayer(props: MyLayerProps) {
+  const map = useMap();
+
+  useEffect(() => {
+    // attach to map imperatively
+    return () => { /* cleanup on unmount */ };
+  }, [map, ...deps]);
+
+  return null;
+}
+```
+
+### Shared internal primitives (`src/hooks/`)
+
+Logic reused between render and editor components lives in `src/hooks/` as internal hooks — **never exported** via `src/index.ts`. Before writing Google Maps logic inside a component, check if a hook in `src/hooks/` already covers it. If the same logic appears in two components, it becomes an internal hook.
+
+Each component has a `.spec.md` in `specs/` describing its full contract. Read the relevant spec before implementing a component.
+
 ## Adding a New Component
 
 1. Create the component under `src/` (e.g., `src/components/MyGrid/MyGrid.tsx`).
