@@ -9,7 +9,7 @@ React component library focused on Google Maps integration — specifically grid
 ## Commands
 
 ```bash
-yarn dev                  # start Storybook dev server on http://localhost:6006
+yarn dev                  # start Storybook dev server on http://localhost:3000
 yarn build                # compile library → dist/ (ESM + CJS + types)
 yarn build:storybook      # build static Storybook site → storybook-static/
 yarn test                 # run all Vitest tests (unit + Storybook stories)
@@ -39,25 +39,36 @@ This is a **library build**, not an application. Key constraints:
 
 ## Storybook Stories
 
+**Every component must have a co-located story file** (`ComponentName.stories.tsx`). A story is considered complete when it has:
+
+- `tags: ['autodocs']` — enables the auto-generated Docs page with prop table
+- At least one functional **Default** story with all required args
+- **Playground** via Controls — all relevant props exposed as args with proper `control` and `description` in `argTypes`
+- **Variation stories** for the most relevant states or configurations (e.g., different layouts, error states, sizes)
+
+For components that depend on `GoogleMapsProvider`, add it as a `decorators` entry in the story meta (not inside the component itself) and expose `apiKey` as an extra arg that defaults to `import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? ''`.
+
 Stories live at `src/**/*.stories.tsx` (co-located with components). Use the `satisfies` pattern for full type inference:
 
 ```tsx
-import type { Meta, StoryObj } from '@storybook/react'
-import { MyComponent } from './MyComponent'
+import type { Meta, StoryObj } from '@storybook/react';
+import { MyComponent } from './MyComponent';
 
 const meta = {
   title: 'Components/MyComponent',
   component: MyComponent,
   parameters: { layout: 'centered' },
-  tags: ['autodocs'],         // enables the auto-generated Docs page
-} satisfies Meta<typeof MyComponent>
+  tags: ['autodocs'], // enables the auto-generated Docs page
+} satisfies Meta<typeof MyComponent>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: { /* required props */ },
-}
+  args: {
+    /* required props */
+  },
+};
 ```
 
 TypeScript prop types are auto-extracted for the Controls panel via `react-docgen-typescript`. For components that require a Google Maps container, add it as a `decorators` entry in the story meta rather than inside the component itself.

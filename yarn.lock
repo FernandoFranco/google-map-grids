@@ -944,6 +944,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@googlemaps/js-api-loader@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@googlemaps/js-api-loader@npm:2.1.1"
+  dependencies:
+    "@types/google.maps": "npm:^3.53.1"
+  checksum: 10c0/06cb6eaf686b838be51efd8293010b7bee42e341e9ad41b42a0ee8909cf06cc5711ba6cfdbcd0c62ff05c8ba35d8622c34130e738bc5844011c8bc457d14de64
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.2":
   version: 0.19.2
   resolution: "@humanfs/core@npm:0.19.2"
@@ -2117,6 +2126,13 @@ __metadata:
   version: 1.0.9
   resolution: "@types/estree@npm:1.0.9"
   checksum: 10c0/3ad3286ca2988cd550dafb8f2ad599c8474868e954fa601a36655bdfefd8039f7c714b8c1c7f2ae219ffbd58bd4660e66fa7479a0120fc02d4777057d4865387
+  languageName: node
+  linkType: hard
+
+"@types/google.maps@npm:^3.53.1, @types/google.maps@npm:^3.65.1":
+  version: 3.65.1
+  resolution: "@types/google.maps@npm:3.65.1"
+  checksum: 10c0/9a7da04d9f27be7a3f9a4de2e6dd9271b68b83aa8a6050fc53ec5cc1366669ead4c27185200adf56f07d69c9a2bba72d82a0cf706e41ed4e7e89d98c44c5c6a1
   languageName: node
   linkType: hard
 
@@ -3892,11 +3908,13 @@ __metadata:
   dependencies:
     "@chromatic-com/storybook": "npm:^5.2.1"
     "@eslint/js": "npm:^9.0.0"
+    "@googlemaps/js-api-loader": "npm:^2.1.1"
     "@storybook/addon-a11y": "npm:^10.4.6"
     "@storybook/addon-docs": "npm:^10.4.6"
     "@storybook/addon-mcp": "npm:^0.6.0"
     "@storybook/addon-vitest": "npm:^10.4.6"
     "@storybook/react-vite": "npm:^10.4.6"
+    "@types/google.maps": "npm:^3.65.1"
     "@types/node": "npm:^22.15.30"
     "@types/react": "npm:^18.3.23"
     "@types/react-dom": "npm:^18.3.7"
