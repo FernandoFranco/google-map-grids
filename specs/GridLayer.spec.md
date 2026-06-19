@@ -1,4 +1,4 @@
-# Grid
+# GridLayer
 
 ## Propósito
 Renderiza uma grade geográfica sobre o mapa com células de tamanho fixo em metros, limitada à área de restrição. Sem `polygon`, não renderiza nada. Células nunca são cortadas — o grid sempre expande ligeiramente para além dos bounds para garantir células completas.
@@ -9,7 +9,7 @@ Render component — retorna `null`.
 ## Interface
 
 ```ts
-export interface GridProps {
+export interface GridLayerProps {
   polygon: google.maps.LatLngLiteral[];
   cellSize: number;
   strokeColor?: string;
@@ -19,7 +19,7 @@ export interface GridProps {
 }
 ```
 
-- `polygon` — array de vértices da área de restrição (mesmo array passado ao `<AreaRestriction polygon={...} />`). Array vazio = não renderiza.
+- `polygon` — array de vértices da área de restrição (mesmo array passado ao `<MapRestriction polygon={...} />`). Array vazio = não renderiza.
 - `cellSize` — tamanho de cada célula em metros.
 - `onBoundsChange` — chamado com os bounds reais do grid renderizado (ligeiramente maiores que os bounds do polígono quando necessário para evitar células cortadas). Consumer pode usar futuramente para ajustar posição/zoom do `GoogleMap`.
 
@@ -76,8 +76,8 @@ export interface GridProps {
 ## Uso típico
 
 ```tsx
-<AreaRestriction polygon={polygon} />
-<Grid
+<MapRestriction polygon={polygon} />
+<GridLayer
   polygon={polygon}
   cellSize={500}
   onBoundsChange={(bounds) => setGridBounds(bounds)}

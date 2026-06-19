@@ -1,4 +1,4 @@
-# Markers
+# MarkerLayer
 
 ## Propósito
 Renderiza um conjunto de marcadores sobre o mapa. Suporta right-click para iniciar edição ou exclusão via context menu mínimo provido pela biblioteca.
@@ -17,7 +17,7 @@ export interface MarkerItem {
   onClick?: (id: string) => void;
 }
 
-export interface MarkersProps {
+export interface MarkerLayerProps {
   items: MarkerItem[];
   onEditRequest?: (id: string) => void;
   onDeleteRequest?: (id: string) => void;

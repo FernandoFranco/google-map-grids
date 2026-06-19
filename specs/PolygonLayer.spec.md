@@ -1,7 +1,7 @@
-# DrawnAreas
+# PolygonLayer
 
 ## Propósito
-Renderiza um conjunto de áreas (polígonos) sobre o mapa. Suporta right-click para iniciar edição ou exclusão via context menu mínimo provido pela biblioteca.
+Renderiza um conjunto de polígonos sobre o mapa. Suporta right-click para iniciar edição ou exclusão via context menu mínimo provido pela biblioteca.
 
 ## Tipo
 Render component — retorna `null`.
@@ -9,7 +9,7 @@ Render component — retorna `null`.
 ## Interface
 
 ```ts
-export interface DrawnArea {
+export interface PolygonItem {
   id: string;
   paths: google.maps.LatLngLiteral[][];
   strokeColor?: string;
@@ -20,14 +20,14 @@ export interface DrawnArea {
   onClick?: (id: string) => void;
 }
 
-export interface DrawnAreasProps {
-  areas: DrawnArea[];
+export interface PolygonLayerProps {
+  areas: PolygonItem[];
   onEditRequest?: (id: string) => void;
   onDeleteRequest?: (id: string) => void;
 }
 ```
 
-- `onEditRequest` — chamado quando o usuário escolhe "Editar" no context menu. Consumer usa para ativar o `DrawnAreaEditor` com `editingArea`.
+- `onEditRequest` — chamado quando o usuário escolhe "Editar" no context menu. Consumer usa para ativar o `PolygonEditor` com `editingArea`.
 - `onDeleteRequest` — chamado quando o usuário escolhe "Excluir" no context menu. Consumer é responsável por mostrar confirmação antes de remover.
 
 ## Context menu
@@ -48,15 +48,15 @@ Quando `onEditRequest` ou `onDeleteRequest` estão definidos, right-click num po
 ## Comportamento
 
 **Mount:**
-- Cria um `google.maps.Polygon` para cada área via `usePolygon`.
+- Cria um `google.maps.Polygon` para cada item via `usePolygon`.
 
 **Update:**
 - Quando `areas` mudar, reconcilia por `id`: adiciona novos, remove ausentes, atualiza paths e estilos.
 
 **Right-click (quando callbacks definidos):**
 - Exibe context menu no ponto do clique.
-- "Editar" → chama `onEditRequest(area.id)`.
-- "Excluir" → chama `onDeleteRequest(area.id)`.
+- "Editar" → chama `onEditRequest(item.id)`.
+- "Excluir" → chama `onDeleteRequest(item.id)`.
 
 **Unmount:**
 - Remove todos os polígonos e listeners do mapa.
@@ -66,8 +66,8 @@ Quando `onEditRequest` ou `onDeleteRequest` estão definidos, right-click num po
 
 ## Dependências internas
 - `useMap()` — para acessar a instância do mapa.
-- `usePolygon` — um por área.
+- `usePolygon` — um por item.
 
 ## Não faz
-- Não permite ao usuário desenhar novas áreas (isso é responsabilidade do `DrawnAreaEditor`).
+- Não permite ao usuário desenhar novos polígonos (isso é responsabilidade do `PolygonEditor`).
 - Não exibe dialog de confirmação de exclusão — chama `onDeleteRequest` e o consumer decide.

@@ -1,7 +1,7 @@
 # usePolygon (hook interno)
 
 ## Propósito
-Gerencia o ciclo de vida de um `google.maps.Polygon` — cria, atualiza e remove do mapa. Hook interno reutilizado por `DrawnAreas` (render) e potencialmente por `AreaRestriction` (contorno visual).
+Gerencia o ciclo de vida de um `google.maps.Polygon` — cria, atualiza e remove do mapa. Hook interno reutilizado por `PolygonLayer` (render) e potencialmente por `MapRestriction` (contorno visual).
 
 ## Tipo
 Hook interno — **não exportado** via `src/index.ts`.

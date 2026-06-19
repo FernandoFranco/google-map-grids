@@ -1,7 +1,7 @@
 # MarkerEditor
 
 ## Propósito
-Permite criar um marcador por vez (modo criação) ou editar um marcador existente (modo edição). O editor não renderiza markers já existentes — isso é responsabilidade do `Markers`. A biblioteca não exibe dialogs de metadata; usa `onMetadataRequest` para que o dev mostre o seu próprio.
+Permite criar um marcador por vez (modo criação) ou editar um marcador existente (modo edição). O editor não renderiza markers já existentes — isso é responsabilidade do `MarkerLayer`. A biblioteca não exibe dialogs de metadata; usa `onMetadataRequest` para que o dev mostre o seu próprio.
 
 ## Tipo
 Editor component — retorna `null` do render. UI exposta via toolbar do `MapEditorShell`.
@@ -22,7 +22,7 @@ export interface MarkerMetadata {
   description?: string;
 }
 
-export interface MarkerConfig extends MarkerMetadata {
+export interface MarkerData extends MarkerMetadata {
   id: string;
   position: google.maps.LatLngLiteral;
 }
@@ -34,10 +34,10 @@ Exportados via `src/index.ts`.
 
 ```ts
 export interface MarkerEditorProps {
-  editingMarker?: MarkerConfig | null;
+  editingMarker?: MarkerData | null;
   onMetadataRequest: (req: MetadataRequest<MarkerMetadata>) => void;
-  onAdd: (marker: MarkerConfig) => void;
-  onUpdate: (marker: MarkerConfig) => void;
+  onAdd: (marker: MarkerData) => void;
+  onUpdate: (marker: MarkerData) => void;
   onEditEnd?: () => void;
   onCancel?: () => void;
 }
@@ -83,7 +83,7 @@ Editar Marcador
 
 ## Modo edição (`editingMarker` definido)
 
-1. Consumer seta `editingMarker` (tipicamente via `onEditRequest` de `<Markers>`).
+1. Consumer seta `editingMarker` (tipicamente via `onEditRequest` de `<MarkerLayer>`).
 2. `MarkerEditor` detecta a mudança e auto-activa.
 3. Renderiza **apenas esse marker** como `AdvancedMarkerElement` com `gmpDraggable: true`.
 4. **[Propriedades]** → `onMetadataRequest({ mode: 'edit', current: marker, onConfirm, onCancel })`.
@@ -114,6 +114,6 @@ Editar Marcador
 - `marker` library (`importLibrary('marker')`) — para `AdvancedMarkerElement`.
 
 ## Não faz
-- Não renderiza markers existentes enquanto inativo (use `Markers`).
+- Não renderiza markers existentes enquanto inativo (use `MarkerLayer`).
 - Não mostra dialog — emite `onMetadataRequest` e aguarda o dev.
 - Não cria múltiplos markers em sequência — um por ativação.

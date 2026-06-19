@@ -1,4 +1,4 @@
-# AreaRestriction
+# MapRestriction
 
 ## Propósito
 Aplica uma restrição de navegação ao mapa e renderiza um overlay escuro semi-transparente em tudo que está fora da área definida — efeito **spotlight**. A área do polígono fica visível e clara; o restante do mapa fica escurecido.
@@ -9,7 +9,7 @@ Render component — retorna `null`.
 ## Interface
 
 ```ts
-export interface AreaRestrictionProps {
+export interface MapRestrictionProps {
   polygon: google.maps.LatLngLiteral[];
   strictBounds?: boolean;
   overlayColor?: string;
@@ -73,6 +73,6 @@ strokeWeight: 0,
 - `usePolygon` — para o overlay com buraco.
 
 ## Não faz
-- Não permite ao usuário desenhar ou alterar a área de restrição (isso é responsabilidade do `AreaRestrictionEditor`).
+- Não permite ao usuário desenhar ou alterar a área de restrição (isso é responsabilidade do `MapRestrictionEditor`).
 - Não exibe borda/stroke no contorno — o contraste visual é dado pelo overlay.
 - Não garante que a restrição de navegação corresponda exatamente ao polígono (a restrição é sempre retangular via a API do Maps).

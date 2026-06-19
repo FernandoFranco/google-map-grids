@@ -1,4 +1,4 @@
-# AreaRestrictionEditor
+# MapRestrictionEditor
 
 ## Propósito
 Permite ao usuário definir interativamente a área de restrição do mapa. Registra seu botão e controles na sidebar do `MapEditorShell` via `useDrawingEditorCore`. Fica dormente quando não ativo.
@@ -9,13 +9,13 @@ Editor component — retorna `null` do render. UI exposta exclusivamente via too
 ## Interface
 
 ```ts
-export interface AreaRestrictionEditorProps {
+export interface MapRestrictionEditorProps {
   onComplete: (polygon: google.maps.LatLngLiteral[]) => void;
   onCancel?: () => void;
 }
 ```
 
-O output é um array de vértices (`LatLngLiteral[]`). O consumidor passa esse array para `<AreaRestriction polygon={...} />`, que calcula o bounding box internamente.
+O output é um array de vértices (`LatLngLiteral[]`). O consumidor passa esse array para `<MapRestriction polygon={...} />`, que calcula o bounding box internamente.
 
 ## Toolbar
 
@@ -31,11 +31,11 @@ O output é um array de vértices (`LatLngLiteral[]`). O consumidor passa esse a
 Delegado integralmente ao `useDrawingEditorCore`:
 
 ```tsx
-function AreaRestrictionEditor(props: AreaRestrictionEditorProps) {
+function MapRestrictionEditor(props: MapRestrictionEditorProps) {
   useDrawingEditorCore({
-    key: 'area-restriction',
+    key: 'map-restriction',
     title: 'Restrição de Área',
-    icon: <AreaRestrictionIcon />,
+    icon: <MapRestrictionIcon />,
     onShapeComplete: props.onComplete,
     onCancel: props.onCancel,
   });
@@ -55,7 +55,7 @@ function AreaRestrictionEditor(props: AreaRestrictionEditorProps) {
 - `useDrawingEditorCore` — gerencia todo o ciclo de vida (sidebar, nodes, fases, controles).
 
 ## Não faz
-- Não aplica a restrição ao mapa (use `AreaRestriction` para isso).
-- Não calcula o bounding box — isso é feito pelo `AreaRestriction` ao receber `polygon`.
+- Não aplica a restrição ao mapa (use `MapRestriction` para isso).
+- Não calcula o bounding box — isso é feito pelo `MapRestriction` ao receber `polygon`.
 - Não exibe a restrição existente.
 - Não renderiza nada no DOM diretamente.

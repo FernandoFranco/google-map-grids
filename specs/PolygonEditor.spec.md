@@ -1,7 +1,7 @@
-# DrawnAreaEditor
+# PolygonEditor
 
 ## Propósito
-Permite criar uma área por vez (modo criação) ou editar uma área existente (modo edição). A biblioteca não exibe dialogs de metadata; usa `onMetadataRequest` para que o dev mostre o seu próprio. Registra seu botão e controles na sidebar do `MapEditorShell` via `useDrawingEditorCore`.
+Permite criar um polígono por vez (modo criação) ou editar um polígono existente (modo edição). A biblioteca não exibe dialogs de metadata; usa `onMetadataRequest` para que o dev mostre o seu próprio. Registra seu botão e controles na sidebar do `MapEditorShell` via `useDrawingEditorCore`.
 
 ## Tipo
 Editor component — retorna `null` do render. UI exposta exclusivamente via toolbar do `MapEditorShell`.
@@ -9,13 +9,13 @@ Editor component — retorna `null` do render. UI exposta exclusivamente via too
 ## Tipos associados
 
 ```ts
-export interface DrawnAreaMetadata {
+export interface PolygonMetadata {
   title: string;
   color: string;
   description?: string;
 }
 
-export interface DrawnAreaData extends DrawnAreaMetadata {
+export interface PolygonData extends PolygonMetadata {
   id: string;
   paths: google.maps.LatLngLiteral[][];
 }
@@ -26,17 +26,17 @@ Exportados via `src/index.ts`.
 ## Interface
 
 ```ts
-export interface DrawnAreaEditorProps {
-  editingArea?: DrawnAreaData | null;
-  onMetadataRequest: (req: MetadataRequest<DrawnAreaMetadata>) => void;
-  onAdd: (area: DrawnAreaData) => void;
-  onUpdate: (area: DrawnAreaData) => void;
+export interface PolygonEditorProps {
+  editingArea?: PolygonData | null;
+  onMetadataRequest: (req: MetadataRequest<PolygonMetadata>) => void;
+  onAdd: (area: PolygonData) => void;
+  onUpdate: (area: PolygonData) => void;
   onEditEnd?: () => void;
   onCancel?: () => void;
 }
 ```
 
-- `editingArea` — quando definido, ativa modo edição para essa área. O consumer é responsável pelo lookup (`areas.find(a => a.id === editingAreaId)`).
+- `editingArea` — quando definido, ativa modo edição para esse polígono. O consumer é responsável pelo lookup (`areas.find(a => a.id === editingId)`).
 - `onMetadataRequest` — solicitação de metadata ao dev; o dev abre seu dialog e chama `onConfirm`/`onCancel`.
 - `onEditEnd` — chamado ao finalizar ou cancelar o modo edição; consumer limpa `editingArea`.
 
@@ -82,8 +82,8 @@ Delegado ao `useDrawingEditorCore` com `title: 'Desenhar Área'`.
 
 ## Modo edição (`editingArea` definido)
 
-1. Consumer seta `editingArea` (tipicamente via `onEditRequest` de `<DrawnAreas>`).
-2. `DrawnAreaEditor` detecta a mudança e auto-activa.
+1. Consumer seta `editingArea` (tipicamente via `onEditRequest` de `<PolygonLayer>`).
+2. `PolygonEditor` detecta a mudança e auto-activa.
 3. Carrega `editingArea.paths` como nodes editáveis — sem lookup necessário.
 4. Começa diretamente na fase `editing` (polígono já fechado).
 5. **[Propriedades]** → `onMetadataRequest({ mode: 'edit', current: editingArea, onConfirm, onCancel })`.
@@ -100,6 +100,6 @@ Delegado ao `useDrawingEditorCore` com `title: 'Desenhar Área'`.
 - `useEditorContext` — para `activateEditor()` no modo edição (auto-activa quando `editingArea` muda).
 
 ## Não faz
-- Não exibe as áreas já desenhadas (use `DrawnAreas` para isso).
+- Não exibe os polígonos já desenhados (use `PolygonLayer` para isso).
 - Não mostra dialog — emite `onMetadataRequest` e aguarda o dev.
-- Não cria múltiplas áreas em sequência — uma por ativação.
+- Não cria múltiplos polígonos em sequência — um por ativação.

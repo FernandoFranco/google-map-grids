@@ -1,7 +1,7 @@
 # useDrawingEditorCore (hook interno)
 
 ## Propósito
-Encapsula o ciclo de vida compartilhado entre editors que usam interação node+line. Combina o registro na sidebar (`useEditorTool`), a ativação do editor de nodes (`useNodeLineEditor`), e a construção do botão idle e dos controles reativos por fase em um único hook — evitando duplicação entre `AreaRestrictionEditor` e `DrawnAreaEditor`.
+Encapsula o ciclo de vida compartilhado entre editors que usam interação node+line. Combina o registro na sidebar (`useEditorTool`), a ativação do editor de nodes (`useNodeLineEditor`), e a construção do botão idle e dos controles reativos por fase em um único hook — evitando duplicação entre `MapRestrictionEditor` e `PolygonEditor`.
 
 ## Tipo
 Hook interno — **não exportado** via `src/index.ts`.
@@ -108,24 +108,24 @@ function useDrawingEditorCore(options: UseDrawingEditorCoreOptions): {
 ## Uso pelos editors
 
 ```tsx
-// AreaRestrictionEditor
-function AreaRestrictionEditor(props: AreaRestrictionEditorProps) {
+// MapRestrictionEditor
+function MapRestrictionEditor(props: MapRestrictionEditorProps) {
   useDrawingEditorCore({
-    key: 'area-restriction',
+    key: 'map-restriction',
     title: 'Restrição de Área',
-    icon: <AreaRestrictionIcon />,
+    icon: <MapRestrictionIcon />,
     onShapeComplete: props.onComplete,
     onCancel: props.onCancel,
   });
   return null;
 }
 
-// DrawnAreaEditor
-function DrawnAreaEditor(props: DrawnAreaEditorProps) {
+// PolygonEditor
+function PolygonEditor(props: PolygonEditorProps) {
   useDrawingEditorCore({
-    key: 'drawn-area',
+    key: 'polygon',
     title: 'Desenhar Área',
-    icon: <DrawnAreaIcon />,
+    icon: <PolygonIcon />,
     onShapeComplete: (nodes) => props.onAdd({ id: crypto.randomUUID(), paths: [nodes] }),
     onCancel: props.onCancel,
   });
