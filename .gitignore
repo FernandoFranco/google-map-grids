@@ -20,7 +20,6 @@ yarn-error.log*
 # OS / Editor
 .DS_Store
 Thumbs.db
-.vscode/
 .idea/
 
 # Yarn Berry
@@ -31,3 +30,6 @@ Thumbs.db
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+*storybook.log
+storybook-static

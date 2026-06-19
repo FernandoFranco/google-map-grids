@@ -9,14 +9,15 @@ React component library focused on Google Maps integration — specifically grid
 ## Commands
 
 ```bash
-yarn build          # compile library → dist/ (ESM + CJS + types)
-yarn dev            # start Vite dev server (for local demos/sandboxes)
-yarn test           # run all Vitest tests
-yarn test <file>    # run a single test file
-yarn lint           # ESLint on src/
-yarn lint:fix       # ESLint with auto-fix
-yarn format         # Prettier write on all files
-yarn format:check   # Prettier check (CI)
+yarn dev                  # start Storybook dev server on http://localhost:6006
+yarn build                # compile library → dist/ (ESM + CJS + types)
+yarn build:storybook      # build static Storybook site → storybook-static/
+yarn test                 # run all Vitest tests (unit + Storybook stories)
+yarn test <file>          # run a single test file
+yarn lint                 # ESLint on src/
+yarn lint:fix             # ESLint with auto-fix
+yarn format               # Prettier write on all files
+yarn format:check         # Prettier check (CI)
 ```
 
 ## Architecture
@@ -34,4 +35,29 @@ This is a **library build**, not an application. Key constraints:
 
 1. Create the component under `src/` (e.g., `src/components/MyGrid/MyGrid.tsx`).
 2. Export it from [src/index.ts](src/index.ts).
-3. Test files should be co-located (`MyGrid.test.tsx`) — `vite-plugin-dts` excludes `*.test.tsx` from type generation automatically.
+3. Test files and story files should be co-located (`MyGrid.test.tsx`, `MyGrid.stories.tsx`) — both are excluded from the library type output automatically.
+
+## Storybook Stories
+
+Stories live at `src/**/*.stories.tsx` (co-located with components). Use the `satisfies` pattern for full type inference:
+
+```tsx
+import type { Meta, StoryObj } from '@storybook/react'
+import { MyComponent } from './MyComponent'
+
+const meta = {
+  title: 'Components/MyComponent',
+  component: MyComponent,
+  parameters: { layout: 'centered' },
+  tags: ['autodocs'],         // enables the auto-generated Docs page
+} satisfies Meta<typeof MyComponent>
+
+export default meta
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
+  args: { /* required props */ },
+}
+```
+
+TypeScript prop types are auto-extracted for the Controls panel via `react-docgen-typescript`. For components that require a Google Maps container, add it as a `decorators` entry in the story meta rather than inside the component itself.
