@@ -38,11 +38,7 @@ export const Usage: Story = {
   args: {
     apiKey: (import.meta as { env?: Record<string, string> }).env?.VITE_GOOGLE_MAPS_API_KEY ?? '',
     children: (
-      <GoogleMap
-        center={{ lat: -23.5505, lng: -46.6333 }}
-        zoom={12}
-        style={{ width: '100%', height: '500px' }}
-      />
+      <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={12} height={500} />
     ),
   },
 };

@@ -31,6 +31,39 @@ This is a **library build**, not an application. Key constraints:
 - ESLint enforces React Hooks rules; Prettier handles formatting (configured as ESLint plugin so they don't conflict).
 - Package manager is **Yarn 4 (Berry)** — use `yarn` not `npm`.
 
+## Code Style Rules
+
+### Comments
+Do **not** add comments unless they are strictly necessary (e.g. an `eslint-disable` with a reason, or a non-obvious workaround). Never add descriptive, explanatory, or JSDoc comments — the code and types should be self-documenting.
+
+### Component pattern
+Always receive props as a single `props` object — never destructure in the function signature:
+
+```tsx
+// ✅ correct
+export function MyComponent(props: MyComponentProps) {
+  return <div style={{ height: props.height }}>{props.label}</div>;
+}
+
+// ❌ wrong
+export function MyComponent({ height, label }: MyComponentProps) { ... }
+```
+
+### Children
+Never include `children` in the component's own `Props` interface. Use `PropsWithChildren<Props>` from React instead:
+
+```tsx
+import { type PropsWithChildren } from 'react';
+
+export interface MyComponentProps {
+  title: string;
+}
+
+export function MyComponent(props: PropsWithChildren<MyComponentProps>) {
+  return <div><h1>{props.title}</h1>{props.children}</div>;
+}
+```
+
 ## Adding a New Component
 
 1. Create the component under `src/` (e.g., `src/components/MyGrid/MyGrid.tsx`).
@@ -72,3 +105,36 @@ export const Default: Story = {
 ```
 
 TypeScript prop types are auto-extracted for the Controls panel via `react-docgen-typescript`. For components that require a Google Maps container, add it as a `decorators` entry in the story meta rather than inside the component itself.
+
+## Google Maps Libraries
+
+Use `importLibrary(name)` from `@googlemaps/js-api-loader` inside each component (after `isLoaded === true`). Do **not** rely on the `libraries` prop of `GoogleMapsProvider` — it is vestigial in the v2 API.
+
+```ts
+import { importLibrary } from '@googlemaps/js-api-loader';
+
+const { Map } = await importLibrary('maps');
+const { AdvancedMarkerElement } = await importLibrary('marker');
+```
+
+Available libraries:
+
+| Library | Purpose |
+|---|---|
+| `core` | Base types: `LatLng`, `LatLngBounds`, events. Loaded by `GoogleMapsProvider` internally. |
+| `maps` | The `Map` class. Needed by any component that renders a map. |
+| `marker` | `AdvancedMarkerElement` — new marker API (replaces legacy `Marker`). |
+| `geometry` | Geometric calculations: distance, polygon area, polyline encode/decode. Most relevant for grid math. |
+| `places` | Address autocomplete, place details, nearby search. |
+| `drawing` | UI drawing tools on the map (polygons, circles, rectangles). |
+| `elevation` | Altitude/elevation data for coordinates. |
+| `geocoding` | Address ↔ coordinates conversion. |
+| `routes` | Directions and routing between points. |
+| `streetView` | Street View panoramas. |
+| `visualization` | Heatmaps. |
+| `journeySharing` | Fleet/ride-sharing real-time tracking UI. |
+| `addressValidation` | Postal address validation and normalization. |
+| `airQuality` | Air quality data by location. |
+| `maps3d` | 3D maps (beta). |
+
+Most relevant for this project: **`maps`**, **`marker`**, **`geometry`**.
