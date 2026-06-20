@@ -4,3 +4,7 @@ export type { GoogleMapsProviderProps } from './components/GoogleMapsProvider/Go
 
 export { GoogleMap } from './components/GoogleMap/GoogleMap';
 export type { GoogleMapProps } from './components/GoogleMap/GoogleMap';
+export { useMap } from './components/GoogleMap/MapContext';
+
+export { MapRestriction } from './components/MapRestriction/MapRestriction';
+export type { MapRestrictionProps } from './components/MapRestriction/MapRestriction';

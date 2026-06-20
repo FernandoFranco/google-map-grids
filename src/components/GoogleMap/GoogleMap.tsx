@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { type PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { importLibrary } from '@googlemaps/js-api-loader';
 import { useGoogleMaps } from '../GoogleMapsProvider/useGoogleMaps';
+import { MapContext } from './MapContext';
 
 export interface GoogleMapProps {
   center: { lat: number; lng: number };
@@ -12,31 +13,37 @@ export interface GoogleMapProps {
   onLoad?: (map: google.maps.Map) => void;
 }
 
-export function GoogleMap(props: GoogleMapProps) {
+export function GoogleMap(props: PropsWithChildren<GoogleMapProps>) {
   const { isLoaded, loadError } = useGoogleMaps();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
 
   useEffect(() => {
     if (!isLoaded || !containerRef.current) return;
 
     importLibrary('maps').then(({ Map }) => {
       if (!containerRef.current) return;
-      const map = new Map(containerRef.current, {
+      const m = new Map(containerRef.current, {
         center: props.center,
         zoom: props.zoom,
         mapId: props.mapId,
         ...props.options,
+        disableDefaultUI: true,
+        keyboardShortcuts: false,
+        isFractionalZoomEnabled: true,
+        mapTypeId: 'satellite',
       });
-      mapRef.current = map;
-      props.onLoad?.(map);
+      mapRef.current = m;
+      setMap(m);
+      props.onLoad?.(m);
     });
-  }, [isLoaded]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isLoaded, props]);
 
   useEffect(() => {
     if (!mapRef.current) return;
     mapRef.current.setCenter(props.center);
-  }, [props.center.lat, props.center.lng]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [props.center, props.center.lat, props.center.lng]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -73,5 +80,10 @@ export function GoogleMap(props: GoogleMapProps) {
     );
   }
 
-  return <div ref={containerRef} style={containerStyle} className={props.className} />;
+  return (
+    <>
+      <div ref={containerRef} style={containerStyle} className={props.className} />
+      {map && <MapContext.Provider value={map}>{props.children}</MapContext.Provider>}
+    </>
+  );
 }
