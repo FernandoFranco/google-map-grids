@@ -11,3 +11,6 @@ export type { MapRestrictionProps } from './components/MapRestriction/MapRestric
 
 export { GridLayer } from './components/GridLayer/GridLayer';
 export type { GridLayerProps } from './components/GridLayer/GridLayer';
+
+export { MgrsLayer } from './components/MgrsLayer/MgrsLayer';
+export type { MgrsLayerProps, MgrsPrecision } from './components/MgrsLayer/MgrsLayer';
