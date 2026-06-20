@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 
 import { useMap } from '../GoogleMap/MapContext';
 import { usePolygon } from '../../hooks/usePolygon';
+import { polygonBounds } from '../../hooks/polygonBounds';
 
 export interface MapRestrictionProps {
   polygon: google.maps.LatLngLiteral[];
@@ -23,12 +24,7 @@ function toClockwise(polygon: google.maps.LatLngLiteral[]): google.maps.LatLngLi
 export function MapRestriction(props: MapRestrictionProps) {
   const map = useMap();
 
-  const lats = props.polygon.map(p => p.lat);
-  const lngs = props.polygon.map(p => p.lng);
-  const north = Math.max(...lats);
-  const south = Math.min(...lats);
-  const east = Math.max(...lngs);
-  const west = Math.min(...lngs);
+  const { north, south, east, west } = polygonBounds(props.polygon);
 
   useEffect(() => {
     map.setOptions({
