@@ -63,6 +63,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     apiKey: defaultApiKey,
+    mapId: 'DEMO_MAP_ID',
     center: SAO_PAULO,
     zoom: 10,
     height: storyMapHeight,
@@ -72,6 +73,7 @@ export const Default: Story = {
 export const Satellite: Story = {
   args: {
     apiKey: defaultApiKey,
+    mapId: 'DEMO_MAP_ID',
     center: SAO_PAULO,
     zoom: 14,
     options: { mapTypeId: 'satellite' },
@@ -82,6 +84,7 @@ export const Satellite: Story = {
 export const Zoomed: Story = {
   args: {
     apiKey: defaultApiKey,
+    mapId: 'DEMO_MAP_ID',
     center: SAO_PAULO,
     zoom: 18,
     height: storyMapHeight,
@@ -102,6 +105,7 @@ export const FixedHeight: Story = {
   ],
   args: {
     apiKey: defaultApiKey,
+    mapId: 'DEMO_MAP_ID',
     center: SAO_PAULO,
     zoom: 12,
     height: storyMapHeight,

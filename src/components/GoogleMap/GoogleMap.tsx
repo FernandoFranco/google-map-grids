@@ -8,7 +8,7 @@ export interface GoogleMapProps {
   zoom: number;
   height?: string | number;
   className?: string;
-  mapId?: string;
+  mapId: string;
   options?: Omit<google.maps.MapOptions, 'center' | 'zoom' | 'mapId'>;
   onLoad?: (map: google.maps.Map) => void;
 }
@@ -83,7 +83,7 @@ export function GoogleMap(props: PropsWithChildren<GoogleMapProps>) {
   return (
     <>
       <div ref={containerRef} style={containerStyle} className={props.className} />
-      {map && <MapContext.Provider value={map}>{props.children}</MapContext.Provider>}
+      {map && <MapContext.Provider value={{ map, mapId: props.mapId }}>{props.children}</MapContext.Provider>}
     </>
   );
 }

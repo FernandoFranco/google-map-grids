@@ -4,7 +4,7 @@ import { GoogleMap } from '../GoogleMap/GoogleMap';
 import { GoogleMapsProvider } from '../GoogleMapsProvider/GoogleMapsProvider';
 import { MarkerLayer, type MarkerItem, type MarkerLayerProps } from './MarkerLayer';
 
-type MarkerLayerStoryArgs = MarkerLayerProps & { apiKey: string; mapId: string };
+type MarkerLayerStoryArgs = MarkerLayerProps & { apiKey: string };
 
 const DEFAULT_ITEMS: MarkerItem[] = [
   {
@@ -80,8 +80,6 @@ const CUSTOM_ICON_ITEMS: MarkerItem[] = [
 
 const defaultApiKey =
   (import.meta as { env?: Record<string, string> }).env?.VITE_GOOGLE_MAPS_API_KEY ?? '';
-const defaultMapId =
-  (import.meta as { env?: Record<string, string> }).env?.VITE_GOOGLE_MAPS_MAP_ID ?? 'DEMO_MAP_ID';
 
 const meta = {
   title: 'Components/MarkerLayer',
@@ -92,11 +90,6 @@ const meta = {
     apiKey: {
       control: 'text',
       description: 'Google Maps API Key',
-      table: { category: 'Provider' },
-    },
-    mapId: {
-      control: 'text',
-      description: 'Google Maps mapId required by AdvancedMarkerElement (use DEMO_MAP_ID for local development)',
       table: { category: 'Provider' },
     },
     items: {
@@ -126,7 +119,7 @@ const meta = {
 
       return (
         <GoogleMapsProvider apiKey={context.args['apiKey'] as string}>
-          <GoogleMap center={center} zoom={14} height={500} mapId={context.args['mapId'] as string}>
+          <GoogleMap center={center} zoom={14} height={500} mapId="DEMO_MAP_ID">
             <Story />
           </GoogleMap>
         </GoogleMapsProvider>
@@ -142,7 +135,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     apiKey: defaultApiKey,
-    mapId: defaultMapId,
     items: DEFAULT_ITEMS,
   },
 };
@@ -150,7 +142,6 @@ export const Default: Story = {
 export const WithClick: Story = {
   args: {
     apiKey: defaultApiKey,
-    mapId: defaultMapId,
     items: DEFAULT_ITEMS,
     onClick: item =>
       alert(
@@ -162,7 +153,6 @@ export const WithClick: Story = {
 export const WithRightClick: Story = {
   args: {
     apiKey: defaultApiKey,
-    mapId: defaultMapId,
     items: DEFAULT_ITEMS,
     onRightClick: (item, x, y) =>
       alert(
@@ -174,7 +164,6 @@ export const WithRightClick: Story = {
 export const WithCustomReactIcons: Story = {
   args: {
     apiKey: defaultApiKey,
-    mapId: defaultMapId,
     items: CUSTOM_ICON_ITEMS,
     onClick: item =>
       alert(

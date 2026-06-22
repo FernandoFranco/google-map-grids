@@ -1,9 +1,20 @@
 import { createContext, useContext } from 'react';
 
-export const MapContext = createContext<google.maps.Map | null>(null);
+interface MapContextValue {
+  map: google.maps.Map;
+  mapId: string;
+}
+
+export const MapContext = createContext<MapContextValue | null>(null);
 
 export function useMap(): google.maps.Map {
-  const map = useContext(MapContext);
-  if (!map) throw new Error('useMap must be used within a GoogleMap');
-  return map;
+  const ctx = useContext(MapContext);
+  if (!ctx) throw new Error('useMap must be used within a GoogleMap');
+  return ctx.map;
+}
+
+export function useMapId(): string {
+  const ctx = useContext(MapContext);
+  if (!ctx) throw new Error('useMapId must be used within a GoogleMap');
+  return ctx.mapId;
 }

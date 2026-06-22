@@ -81,7 +81,7 @@ const meta = {
       };
       return (
         <GoogleMapsProvider apiKey={context.args['apiKey'] as string}>
-          <GoogleMap center={center} zoom={14} height={500}>
+          <GoogleMap center={center} zoom={14} height={500} mapId="DEMO_MAP_ID">
             <Story />
           </GoogleMap>
         </GoogleMapsProvider>
