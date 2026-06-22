@@ -17,3 +17,6 @@ export type { MgrsLayerProps, MgrsPrecision } from './components/MgrsLayer/MgrsL
 
 export { PolygonLayer } from './components/PolygonLayer/PolygonLayer';
 export type { PolygonLayerProps, PolygonItem } from './components/PolygonLayer/PolygonLayer';
+
+export { MarkerLayer } from './components/MarkerLayer/MarkerLayer';
+export type { MarkerLayerProps, MarkerItem } from './components/MarkerLayer/MarkerLayer';
