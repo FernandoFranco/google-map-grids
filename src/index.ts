@@ -14,3 +14,6 @@ export type { GridLayerProps } from './components/GridLayer/GridLayer';
 
 export { MgrsLayer } from './components/MgrsLayer/MgrsLayer';
 export type { MgrsLayerProps, MgrsPrecision } from './components/MgrsLayer/MgrsLayer';
+
+export { PolygonLayer } from './components/PolygonLayer/PolygonLayer';
+export type { PolygonLayerProps, PolygonItem } from './components/PolygonLayer/PolygonLayer';
