@@ -6,6 +6,9 @@ export { GoogleMap } from './components/GoogleMap/GoogleMap';
 export type { GoogleMapProps } from './components/GoogleMap/GoogleMap';
 export { useMap, useMapId } from './components/GoogleMap/MapContext';
 
+export { MapEditorShell } from './components/MapEditorShell/MapEditorShell';
+export type { MapEditorShellProps } from './components/MapEditorShell/MapEditorShell';
+
 export { MapRestriction } from './components/MapRestriction/MapRestriction';
 export type { MapRestrictionProps } from './components/MapRestriction/MapRestriction';
 

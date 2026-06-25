@@ -26,7 +26,7 @@ export function useEditorTool(options: UseEditorToolOptions): { isActive: boolea
         editorContext.deactivateEditor();
       }
     };
-  }, [editorContext, options.key, options.button, options.controls]);
+  }, [editorContext, options.button, options.controls, options.key]);
 
   return { isActive: editorContext.activeEditorKey === options.key };
 }
