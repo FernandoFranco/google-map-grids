@@ -1,5 +1,10 @@
 import { createContext, type ReactNode } from 'react';
 
+export interface EditorButtonState {
+  isActive: boolean;
+  activate: () => void;
+}
+
 export interface EditorContextValue {
   activeEditorKey: string | null;
   activateEditor: (key: string) => void;

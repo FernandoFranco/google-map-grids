@@ -7,7 +7,7 @@ export type { GoogleMapProps } from './components/GoogleMap/GoogleMap';
 export { useMap, useMapId } from './components/GoogleMap/MapContext';
 
 export { MapEditorShell } from './components/MapEditorShell/MapEditorShell';
-export type { MapEditorShellProps } from './components/MapEditorShell/MapEditorShell';
+export type { MapEditorShellProps, EditorButtonState } from './components/MapEditorShell/MapEditorShell';
 
 export { MapRestriction } from './components/MapRestriction/MapRestriction';
 export type { MapRestrictionProps } from './components/MapRestriction/MapRestriction';
@@ -23,3 +23,13 @@ export type { PolygonLayerProps, PolygonItem } from './components/PolygonLayer/P
 
 export { MarkerLayer } from './components/MarkerLayer/MarkerLayer';
 export type { MarkerLayerProps, MarkerItem } from './components/MarkerLayer/MarkerLayer';
+
+export { MarkerEditor } from './components/MarkerEditor/MarkerEditor';
+export type {
+  MarkerEditorProps,
+  MarkerEditorControlsState,
+  MarkerData,
+  MarkerMetadata,
+  MetadataRequest,
+  IconDefinition,
+} from './components/MarkerEditor/MarkerEditor';

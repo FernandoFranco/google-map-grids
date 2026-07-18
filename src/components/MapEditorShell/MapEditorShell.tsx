@@ -1,6 +1,17 @@
-import { type PropsWithChildren, useState, useCallback, useRef, useReducer, useMemo, type ReactNode } from 'react';
+import {
+  type PropsWithChildren,
+  useState,
+  useCallback,
+  useRef,
+  useReducer,
+  useMemo,
+  Fragment,
+  type ReactNode,
+} from 'react';
 
 import { EditorContext, type EditorContextValue } from './EditorContext';
+
+export type { EditorButtonState } from './EditorContext';
 
 export interface MapEditorShellProps {
   sidebarPosition?: 'left' | 'right';
@@ -49,12 +60,7 @@ export function MapEditorShell(props: PropsWithChildren<MapEditorShellProps>) {
   );
 
   const sidebarPos = props.sidebarPosition ?? 'left';
-  const resolvedSidebarWidth =
-    props.sidebarWidth === undefined
-      ? '260px'
-      : typeof props.sidebarWidth === 'number'
-        ? `${props.sidebarWidth}px`
-        : props.sidebarWidth;
+  const resolvedSidebarWidth = typeof props.sidebarWidth === 'number' ? `${props.sidebarWidth}px` : props.sidebarWidth;
 
   const wrapperStyle: React.CSSProperties = {
     display: 'flex',
@@ -64,10 +70,6 @@ export function MapEditorShell(props: PropsWithChildren<MapEditorShellProps>) {
 
   const sidebarStyle: React.CSSProperties = {
     width: resolvedSidebarWidth,
-    padding: '16px',
-    borderRight: sidebarPos === 'left' ? '1px solid #e0e0e0' : undefined,
-    borderLeft: sidebarPos === 'right' ? '1px solid #e0e0e0' : undefined,
-    background: '#f9f9f9',
     overflowY: 'auto',
   };
 
@@ -78,27 +80,9 @@ export function MapEditorShell(props: PropsWithChildren<MapEditorShellProps>) {
   const sidebarContent =
     activeEditorKey === null
       ? Array.from(toolsRef.current.entries()).map(([key, tool]) => (
-          <div key={key} style={{ marginBottom: '12px' }}>
-            <button
-              onClick={() => activateEditor(key)}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                background: '#fff',
-                cursor: 'pointer',
-                fontSize: '14px',
-              }}
-            >
-              {tool.button}
-            </button>
-          </div>
+          <Fragment key={key}>{tool.button}</Fragment>
         ))
-      : (() => {
-          const activeTool = toolsRef.current.get(activeEditorKey);
-          return activeTool ? <div>{activeTool.controls}</div> : null;
-        })();
+      : (toolsRef.current.get(activeEditorKey)?.controls ?? null);
 
   return (
     <EditorContext.Provider value={editorContextValue}>

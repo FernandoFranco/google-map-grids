@@ -10,32 +10,37 @@ const SAO_PAULO = { lat: -23.5505, lng: -46.6333 };
 const defaultApiKey =
   (import.meta as { env?: Record<string, string> }).env?.VITE_GOOGLE_MAPS_API_KEY ?? '';
 
-function MockEditor(props: { name: string; key: string }) {
+const DEMO_BUTTON_CLASS = 'demo-tool-button';
+const DEMO_STYLES = `
+  .${DEMO_BUTTON_CLASS} {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  .${DEMO_BUTTON_CLASS}:hover { background: #f5f5f5; }
+`;
+
+function MockEditor(props: { name: string; toolKey: string }) {
+  const { activateEditor } = useEditorContext();
+
   useEditorTool({
-    key: props.key,
-    button: `📍 ${props.name}`,
+    key: props.toolKey,
+    button: (
+      <button type="button" className={DEMO_BUTTON_CLASS} onClick={() => activateEditor(props.toolKey)}>
+        📍 {props.name}
+      </button>
+    ),
     controls: (
       <div>
         <h3>{props.name}</h3>
         <p style={{ fontSize: '12px', color: '#666', marginBottom: '12px' }}>
           This is a mock editor. Click the map (not implemented in this demo).
         </p>
-        <button
-          onClick={() => {
-            const { deactivateEditor } = useEditorContext();
-            deactivateEditor();
-          }}
-          style={{
-            width: '100%',
-            padding: '8px 12px',
-            background: '#f5f5f5',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-        >
-          Cancel
-        </button>
       </div>
     ),
   });
@@ -64,22 +69,97 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const DEFAULT_EXAMPLE_CODE = `function CustomEditorTool(props: { name: string; toolKey: string }) {
+  const { activateEditor } = useEditorContext();
+
+  useEditorTool({
+    key: props.toolKey,
+    button: (
+      <button type="button" onClick={() => activateEditor(props.toolKey)}>
+        📍 {props.name}
+      </button>
+    ),
+    controls: (
+      <div>
+        <h3>{props.name}</h3>
+        <p>Click the map to use this tool.</p>
+      </div>
+    ),
+  });
+
+  return null;
+}
+
+function MapEditorShellDemo() {
+  return (
+    <GoogleMapsProvider apiKey={apiKey}>
+      <MapEditorShell sidebarPosition="left" sidebarWidth="260px">
+        <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={14} mapId="YOUR_MAP_ID">
+          <CustomEditorTool name="Add Marker" toolKey="add-marker" />
+          <CustomEditorTool name="Draw Area" toolKey="draw-area" />
+          <CustomEditorTool name="Set Restriction" toolKey="restrict" />
+        </GoogleMap>
+      </MapEditorShell>
+    </GoogleMapsProvider>
+  );
+}`;
+
+const RIGHT_SIDEBAR_EXAMPLE_CODE = `function CustomEditorTool(props: { name: string; toolKey: string }) {
+  const { activateEditor } = useEditorContext();
+
+  useEditorTool({
+    key: props.toolKey,
+    button: (
+      <button type="button" onClick={() => activateEditor(props.toolKey)}>
+        📍 {props.name}
+      </button>
+    ),
+    controls: (
+      <div>
+        <h3>{props.name}</h3>
+        <p>Click the map to use this tool.</p>
+      </div>
+    ),
+  });
+
+  return null;
+}
+
+function MapEditorShellDemo() {
+  return (
+    <GoogleMapsProvider apiKey={apiKey}>
+      <MapEditorShell sidebarPosition="right" sidebarWidth="280px">
+        <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={14} mapId="YOUR_MAP_ID">
+          <CustomEditorTool name="Add Marker" toolKey="add-marker" />
+          <CustomEditorTool name="Draw Area" toolKey="draw-area" />
+        </GoogleMap>
+      </MapEditorShell>
+    </GoogleMapsProvider>
+  );
+}`;
+
 export const Default: Story = {
   args: {
     sidebarPosition: 'left',
     sidebarWidth: '260px',
   },
   render: (args) => (
-    <GoogleMapsProvider apiKey={defaultApiKey}>
-      <MapEditorShell {...args}>
-        <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={400} >
-          <MockEditor name="Add Marker" key="add-marker" />
-          <MockEditor name="Draw Area" key="draw-area" />
-          <MockEditor name="Set Restriction" key="restrict" />
-        </GoogleMap>
-      </MapEditorShell>
-    </GoogleMapsProvider>
+    <>
+      <style>{DEMO_STYLES}</style>
+      <GoogleMapsProvider apiKey={defaultApiKey}>
+        <MapEditorShell {...args}>
+          <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={400}>
+            <MockEditor name="Add Marker" toolKey="add-marker" />
+            <MockEditor name="Draw Area" toolKey="draw-area" />
+            <MockEditor name="Set Restriction" toolKey="restrict" />
+          </GoogleMap>
+        </MapEditorShell>
+      </GoogleMapsProvider>
+    </>
   ),
+  parameters: {
+    docs: { source: { code: DEFAULT_EXAMPLE_CODE, language: 'tsx', type: 'code' } },
+  },
 };
 
 export const RightSidebar: Story = {
@@ -88,13 +168,19 @@ export const RightSidebar: Story = {
     sidebarWidth: '280px',
   },
   render: (args) => (
-    <GoogleMapsProvider apiKey={defaultApiKey}>
-      <MapEditorShell {...args}>
-        <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={400}>
-          <MockEditor name="Add Marker" key="add-marker" />
-          <MockEditor name="Draw Area" key="draw-area" />
-        </GoogleMap>
-      </MapEditorShell>
-    </GoogleMapsProvider>
+    <>
+      <style>{DEMO_STYLES}</style>
+      <GoogleMapsProvider apiKey={defaultApiKey}>
+        <MapEditorShell {...args}>
+          <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={400}>
+            <MockEditor name="Add Marker" toolKey="add-marker" />
+            <MockEditor name="Draw Area" toolKey="draw-area" />
+          </GoogleMap>
+        </MapEditorShell>
+      </GoogleMapsProvider>
+    </>
   ),
+  parameters: {
+    docs: { source: { code: RIGHT_SIDEBAR_EXAMPLE_CODE, language: 'tsx', type: 'code' } },
+  },
 };

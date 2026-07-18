@@ -20,7 +20,7 @@ export function GoogleMap(props: PropsWithChildren<GoogleMapProps>) {
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
   useEffect(() => {
-    if (!isLoaded || !containerRef.current) return;
+    if (!isLoaded || !containerRef.current || mapRef.current) return;
 
     importLibrary('maps').then(({ Map }) => {
       if (!containerRef.current) return;

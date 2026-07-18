@@ -1,22 +1,32 @@
 # useDrawingEditorCore (hook interno)
 
 ## Propósito
-Encapsula o ciclo de vida compartilhado entre editors que usam interação node+line. Combina o registro na sidebar (`useEditorTool`), a ativação do editor de nodes (`useNodeLineEditor`), e a construção do botão idle e dos controles reativos por fase em um único hook — evitando duplicação entre `MapRestrictionEditor` e `PolygonEditor`.
+Encapsula o ciclo de vida compartilhado entre editors que usam interação node+line. Combina o registro na sidebar (`useEditorTool`) e a ativação do editor de nodes (`useNodeLineEditor`) em um único hook — evitando duplicação entre `MapRestrictionEditor` e `PolygonEditor`. Não constrói nenhuma UI própria — botão idle e controls ativos são 100% delegados ao dev via `renderButton`/`renderControls`.
 
 ## Tipo
-Hook interno — **não exportado** via `src/index.ts`.
+Hook interno — **não exportado** via `src/index.ts`. Os tipos `EditorButtonState`/`DrawingEditorControlsState` que ele usa **são** públicos (re-exportados pelos editors que o consomem).
+
+## Tipos associados
+
+```ts
+export type DrawingEditorControlsState =
+  | { phase: 'drawing'; cancel: () => void }
+  | { phase: 'editing'; finalize: () => void; cancel: () => void };
+```
+
+Definido neste módulo (`src/hooks/useDrawingEditorCore.ts`) por ser compartilhado entre os dois editors que usam o hook (`MapRestrictionEditor` usa exatamente esse formato; `PolygonEditor` o enriquece — ver [PolygonEditor.spec.md](../PolygonEditor.spec.md)).
 
 ## Interface
 
 ```ts
 export interface UseDrawingEditorCoreOptions {
   key: string;
-  title: string;
-  icon: React.ReactNode;
   nodeStyle?: NodeStyle;
   lineStyle?: LineStyle;
   onShapeComplete: (nodes: google.maps.LatLngLiteral[]) => void;
   onCancel?: () => void;
+  renderButton: (state: EditorButtonState) => React.ReactNode;
+  renderControls: (state: DrawingEditorControlsState) => React.ReactNode;
 }
 
 function useDrawingEditorCore(options: UseDrawingEditorCoreOptions): {
@@ -25,42 +35,42 @@ function useDrawingEditorCore(options: UseDrawingEditorCoreOptions): {
 }
 ```
 
-- `title` — label do editor: usado como label do botão idle na sidebar E como cabeçalho dos controles ativos.
-- `icon` — ícone específico do editor, exibido no botão idle ao lado do `title`.
-- `phase` — estado atual exposto para observabilidade. Os callers não precisam reagir ao `phase` para a sidebar — isso é gerenciado internamente.
+- `phase` — estado atual exposto para observabilidade. Os callers não precisam reagir ao `phase` para a sidebar — isso já vem refletido em `DrawingEditorControlsState.phase` passado a `renderControls`.
+- `renderButton` — **obrigatório**. Repassado pelo editor caller (`PolygonEditor`, `MapRestrictionEditor`); mesma convenção de `MarkerEditorProps.renderButton` (ver `src/components/MarkerEditor/MarkerEditor.types.ts`, já implementado). `EditorButtonState` é um tipo compartilhado exportado por `MapEditorShell` (ver `src/components/MapEditorShell/EditorContext.ts`). O hook não tem botão default — sempre delega a construção ao dev. Retornando `null`, nenhum botão é registrado.
+- `renderControls` — **obrigatório**. Recebe `DrawingEditorControlsState`, discriminado por `phase`: em `'drawing'` só existe `cancel`; em `'editing'` existem `finalize` e `cancel`. O hook não tem painel default — sempre delega ao dev. Retornando `null`, nenhum painel é exibido enquanto ativo. Note que o hook não sabe nada sobre metadata/propriedades — isso é responsabilidade de cada editor caller (ver `PolygonEditor`).
 
 ## Sidebar gerada internamente
 
-**Botão idle** (construído pelo hook, passado a `useEditorTool`):
-```
-[ {icon}  {title} ]
-```
+**Botão idle** — o hook chama `options.renderButton({ isActive, activate })` e usa o resultado (incluindo `null`) diretamente.
 
-**Controles ativos — fase `drawing`:**
+**Controls ativos** — o hook chama `options.renderControls({ phase, cancel, ...(phase === 'editing' ? { finalize } : {}) })` e usa o resultado (incluindo `null`) diretamente.
+
+Em ambos os casos, o resultado já é um elemento completo (ou `null`) passado a `useEditorTool` — `MapEditorShell` apenas o renderiza, sem envolver em markup próprio.
+
+**Exemplo de implementação de `renderControls` — fase `drawing`:**
 ```
-{title}
+Desenhar Área
 ────────────────────────────────
 "Clique no mapa para adicionar pontos.
  Clique no 1º ponto para fechar (mín. 3)."
 ────────────────────────────────
-[Cancelar]
+[Cancelar]  → state.cancel()
 ```
 
-**Controles ativos — fase `editing`:**
+**Exemplo de implementação de `renderControls` — fase `editing`:**
 ```
-{title}
+Desenhar Área
 ────────────────────────────────
 "Arraste os pontos para ajustar.
  Clique em uma linha para adicionar ponto."
 ────────────────────────────────
-[Finalizar]   [Cancelar]
+[Finalizar]  → state.finalize()    [Cancelar]  → state.cancel()
 ```
 
 ## Comportamento
 
 **Mount:**
-- Constrói botão idle e controles internamente.
-- Chama `useEditorTool({ key, button, controls })` — registra na sidebar do `MapEditorShell`.
+- Chama `useEditorTool({ key, button, controls })`, onde `button`/`controls` vêm de `options.renderButton`/`options.renderControls` — registra na sidebar do `MapEditorShell`.
 - Inicializa `useNodeLineEditor` com `enabled: false`.
 
 **Ativação (`isActive = true`):**
@@ -69,15 +79,14 @@ function useDrawingEditorCore(options: UseDrawingEditorCoreOptions): {
 
 **Transição `drawing` → `editing`:**
 - `useNodeLineEditor` chama `onPolygonClosed` ao detectar clique em node[0] com ≥ 3 nodes.
-- `phase` atualiza para `'editing'`.
-- Controles internos são re-registrados mostrando "Finalizar".
+- `phase` atualiza para `'editing'` → `renderControls` é chamado de novo com o novo `state.phase`/`state.finalize`.
 
-**"Finalizar" (botão interno, fase `editing`):**
+**`state.finalize()` (fase `editing`):**
 - Chama `options.onShapeComplete(nodes)`.
 - Chama `deactivateEditor()`.
 - Chama `clear()` no `useNodeLineEditor`.
 
-**"Cancelar" (botão interno, ambas as fases):**
+**`state.cancel()` (ambas as fases):**
 - Chama `options.onCancel()` (se fornecido).
 - Chama `deactivateEditor()`.
 - Chama `clear()` no `useNodeLineEditor`.
@@ -103,37 +112,42 @@ function useDrawingEditorCore(options: UseDrawingEditorCoreOptions): {
 - `useMap()` — para passar `map` ao `useNodeLineEditor`.
 - `useEditorTool` — para registro na sidebar e para obter `isActive`.
 - `useNodeLineEditor` — para a mecânica de node placement, drag, lines e fases.
-- `useEditorContext` — para `deactivateEditor()` nos botões internos.
+- `useEditorContext` — para `deactivateEditor()` (chamado por `state.cancel()`/`state.finalize()`) e para derivar `isActive`/`activate` passados a `options.renderButton`.
 
 ## Uso pelos editors
 
 ```tsx
-// MapRestrictionEditor
+// MapRestrictionEditor — sem metadata, renderControls é passthrough direto
 function MapRestrictionEditor(props: MapRestrictionEditorProps) {
   useDrawingEditorCore({
     key: 'map-restriction',
-    title: 'Restrição de Área',
-    icon: <MapRestrictionIcon />,
     onShapeComplete: props.onComplete,
     onCancel: props.onCancel,
+    renderButton: props.renderButton,
+    renderControls: props.renderControls,
   });
   return null;
 }
 
-// PolygonEditor
+// PolygonEditor — tem metadata, então enriquece o estado do hook antes de repassar
+// (ver PolygonEditorControlsState em PolygonEditor.spec.md)
 function PolygonEditor(props: PolygonEditorProps) {
   useDrawingEditorCore({
     key: 'polygon',
-    title: 'Desenhar Área',
-    icon: <PolygonIcon />,
-    onShapeComplete: (nodes) => props.onAdd({ id: crypto.randomUUID(), paths: [nodes] }),
+    onShapeComplete: (nodes) => props.onAdd({ id: crypto.randomUUID(), paths: [nodes], ...pendingMetadata }),
     onCancel: props.onCancel,
+    renderButton: props.renderButton,
+    renderControls: (hookState) =>
+      props.renderControls(
+        hookState.phase === 'editing' ? { ...hookState, properties: handleProperties } : hookState,
+      ),
   });
   return null;
 }
 ```
 
 ## Não faz
-- Não define o estilo visual do botão idle além de ícone + label.
+- Não constrói nenhum botão idle ou painel de controls default — ambos são sempre delegados a `options.renderButton`/`options.renderControls`.
+- Não sabe nada sobre metadata/propriedades — isso é responsabilidade de cada editor caller.
 - Não converte o output — isso é do callback `onShapeComplete` do caller.
 - Não gerencia múltiplos drawings simultâneos.

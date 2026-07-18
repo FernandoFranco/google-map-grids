@@ -18,7 +18,9 @@ export function useEditorTool(options: UseEditorToolOptions): { isActive: boolea
 
   useLayoutEffect(() => {
     editorContext.registerTool(options.key, options.button, options.controls);
+  }, [editorContext, options.key, options.button, options.controls]);
 
+  useLayoutEffect(() => {
     return () => {
       editorContext.unregisterTool(options.key);
 
@@ -26,7 +28,7 @@ export function useEditorTool(options: UseEditorToolOptions): { isActive: boolea
         editorContext.deactivateEditor();
       }
     };
-  }, [editorContext, options.button, options.controls, options.key]);
+  }, [editorContext, options.key]);
 
   return { isActive: editorContext.activeEditorKey === options.key };
 }
