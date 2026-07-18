@@ -2,6 +2,7 @@
   "name": "google-map-grids",
   "version": "0.1.0",
   "description": "React component library — Google Map Grids",
+  "license": "MIT",
   "type": "module",
   "packageManager": "yarn@4.17.0",
   "files": [
