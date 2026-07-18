@@ -19,6 +19,7 @@ export interface UseDrawingEditorCoreOptions {
   initialNodes?: google.maps.LatLngLiteral[];
   onShapeComplete: (nodes: google.maps.LatLngLiteral[]) => void;
   onCancel?: () => void;
+  onActiveChange?: (active: boolean) => void;
   renderButton: (state: EditorButtonState) => ReactNode;
   renderControls: (state: DrawingEditorControlsState) => ReactNode;
 }
@@ -36,6 +37,10 @@ export function useDrawingEditorCore(options: UseDrawingEditorCoreOptions): {
   });
 
   const isActive = activeEditorKey === options.key;
+
+  useEffect(() => {
+    optionsRef.current.onActiveChange?.(isActive);
+  }, [isActive]);
 
   const { nodes, phase, clear } = useNodeLineEditor({
     map,

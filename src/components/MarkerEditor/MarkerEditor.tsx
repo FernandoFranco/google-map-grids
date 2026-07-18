@@ -11,7 +11,6 @@ export type {
   IconDefinition,
   MarkerMetadata,
   MarkerData,
-  MetadataRequest,
   MarkerEditorControlsState,
   MarkerEditorProps,
 } from './MarkerEditor.types';

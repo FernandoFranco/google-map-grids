@@ -1,4 +1,5 @@
-import type { EditorButtonState } from '../MapEditorShell/EditorContext';
+import type { EditorButtonState, MetadataRequest } from '../MapEditorShell/EditorContext';
+
 import type { ReactNode } from 'react';
 
 export interface IconDefinition {
@@ -17,13 +18,6 @@ export interface MarkerMetadata {
 export interface MarkerData extends MarkerMetadata {
   id: string;
   position: google.maps.LatLngLiteral;
-}
-
-export interface MetadataRequest<T> {
-  mode: 'create' | 'edit';
-  current: Partial<T>;
-  onConfirm: (data: T) => void;
-  onCancel: () => void;
 }
 
 export type MarkerEditorControlsState =

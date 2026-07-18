@@ -14,6 +14,7 @@ export interface PolygonItem {
 
 export interface PolygonLayerProps {
   areas: PolygonItem[];
+  interactive?: boolean;
   onClick?: (item: PolygonItem) => void;
   onRightClick?: (item: PolygonItem, x: number, y: number) => void;
 }
@@ -22,13 +23,14 @@ function toLLPaths(paths: google.maps.LatLngLiteral[][]): google.maps.LatLng[][]
   return paths.map(ring => ring.map(p => new google.maps.LatLng(p.lat, p.lng)));
 }
 
-function itemOptions(item: PolygonItem): google.maps.PolygonOptions {
+function itemOptions(item: PolygonItem, interactive: boolean): google.maps.PolygonOptions {
   return {
     strokeColor: item.strokeColor ?? '#FFFFFF',
     strokeOpacity: item.strokeOpacity ?? 0.8,
     strokeWeight: item.strokeWeight ?? 2,
     fillColor: item.fillColor ?? '#FFFFFF',
     fillOpacity: item.fillOpacity ?? 0.2,
+    clickable: interactive,
   };
 }
 
@@ -55,18 +57,19 @@ export function PolygonLayer(props: PolygonLayerProps) {
       }
     }
 
+    const interactive = props.interactive ?? true;
+
     for (const item of props.areas) {
       const llPaths = toLLPaths(item.paths);
       const existing = registry.get(item.id);
       if (existing) {
         existing.polygon.setPaths(llPaths);
-        existing.polygon.setOptions(itemOptions(item));
+        existing.polygon.setOptions(itemOptions(item, interactive));
       } else {
         const polygon = new google.maps.Polygon({
           map,
           paths: llPaths,
-          clickable: true,
-          ...itemOptions(item),
+          ...itemOptions(item, interactive),
         });
         const listeners: google.maps.MapsEventListener[] = [];
 

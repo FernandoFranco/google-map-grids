@@ -5,6 +5,13 @@ export interface EditorButtonState {
   activate: () => void;
 }
 
+export interface MetadataRequest<T> {
+  mode: 'create' | 'edit';
+  current: Partial<T>;
+  onConfirm: (data: T) => void;
+  onCancel: () => void;
+}
+
 export interface EditorContextValue {
   activeEditorKey: string | null;
   activateEditor: (key: string) => void;

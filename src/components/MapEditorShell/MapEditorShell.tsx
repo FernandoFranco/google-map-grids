@@ -11,7 +11,7 @@ import {
 
 import { EditorContext, type EditorContextValue } from './EditorContext';
 
-export type { EditorButtonState } from './EditorContext';
+export type { EditorButtonState, MetadataRequest } from './EditorContext';
 
 export interface MapEditorShellProps {
   sidebarPosition?: 'left' | 'right';
