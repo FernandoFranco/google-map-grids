@@ -33,3 +33,11 @@ export type {
   MetadataRequest,
   IconDefinition,
 } from './components/MarkerEditor/MarkerEditor';
+
+export { MapRestrictionEditor } from './components/MapRestrictionEditor/MapRestrictionEditor';
+export type {
+  MapRestrictionEditorProps,
+  DrawingEditorControlsState,
+  NodeStyle,
+  LineStyle,
+} from './components/MapRestrictionEditor/MapRestrictionEditor';

@@ -25,7 +25,7 @@ export type PolygonEditorControlsState =
   | { phase: 'editing'; properties: () => void; finalize: () => void; cancel: () => void };
 ```
 
-Exportados via `src/index.ts`. `PolygonEditorControlsState` **não** é o `DrawingEditorControlsState` genérico de `useDrawingEditorCore` (ver [useDrawingEditorCore.spec.md](hooks/useDrawingEditorCore.spec.md)) — é um tipo próprio deste editor, mais rico: a fase `editing` ganha `properties`, porque diferente de `MapRestrictionEditor`, `PolygonEditor` tem metadata (`onMetadataRequest`). O hook genérico não sabe nada sobre isso.
+Exportados via `src/index.ts`. `PolygonEditorControlsState` **não** é o `DrawingEditorControlsState` genérico de `useDrawingEditorCore` (ver `src/hooks/useDrawingEditorCore.ts`, já implementado) — é um tipo próprio deste editor, mais rico: a fase `editing` ganha `properties`, porque diferente de `MapRestrictionEditor`, `PolygonEditor` tem metadata (`onMetadataRequest`). O hook genérico não sabe nada sobre isso.
 
 ## Interface
 
