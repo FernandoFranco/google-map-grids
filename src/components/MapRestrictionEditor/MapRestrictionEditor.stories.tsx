@@ -65,7 +65,10 @@ function renderRestrictionButton(state: EditorButtonState, setEditing: (editing:
   );
 }
 
-function renderRestrictionControls(state: DrawingEditorControlsState, setEditing: (editing: boolean) => void) {
+function renderRestrictionControls(
+  state: DrawingEditorControlsState,
+  setEditing: (editing: boolean) => void,
+) {
   if (state.phase === 'drawing') {
     return (
       <div>
@@ -198,7 +201,9 @@ function EditExistingDemo(args: MapRestrictionEditorStoryArgs) {
 }
 
 function PlaygroundDemo(args: MapRestrictionEditorStoryArgs) {
-  const [restriction, setRestriction] = useState<google.maps.LatLngLiteral[] | null>(SAMPLE_RESTRICTION);
+  const [restriction, setRestriction] = useState<google.maps.LatLngLiteral[] | null>(
+    SAMPLE_RESTRICTION,
+  );
   const [isEditing, setIsEditing] = useState(false);
 
   return (
@@ -250,12 +255,13 @@ const meta = {
     nodeStyle: {
       control: false,
       description:
-        'Customizes node dot appearance: fillColor, strokeColor, size, and closeFillColor (node[0]\'s color once it becomes clickable to close the shape).',
+        "Customizes node dot appearance: fillColor, strokeColor, size, and closeFillColor (node[0]'s color once it becomes clickable to close the shape).",
       table: { category: 'Style' },
     },
     lineStyle: {
       control: false,
-      description: 'Customizes line appearance shared by the drawing polyline, the dashed closing preview, and the closed segments: strokeColor, strokeWeight, strokeOpacity.',
+      description:
+        'Customizes line appearance shared by the drawing polyline, the dashed closing preview, and the closed segments: strokeColor, strokeWeight, strokeOpacity.',
       table: { category: 'Style' },
     },
     onComplete: {

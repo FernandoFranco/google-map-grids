@@ -34,11 +34,7 @@ export function latLngToUtm(
       ((15 * e4) / 256 + (45 * e6) / 1024) * Math.sin(4 * phi) -
       ((35 * e6) / 3072) * Math.sin(6 * phi));
   const easting =
-    k0 *
-      N *
-      (A +
-        ((1 - T + C) * A3) / 6 +
-        ((5 - 18 * T + T * T + 72 * C - 58 * e2p) * A5) / 120) +
+    k0 * N * (A + ((1 - T + C) * A3) / 6 + ((5 - 18 * T + T * T + 72 * C - 58 * e2p) * A5) / 120) +
     500_000;
   const y =
     k0 *

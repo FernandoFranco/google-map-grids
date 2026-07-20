@@ -20,7 +20,7 @@ export interface PolygonLayerProps {
 }
 
 function toLLPaths(paths: google.maps.LatLngLiteral[][]): google.maps.LatLng[][] {
-  return paths.map(ring => ring.map(p => new google.maps.LatLng(p.lat, p.lng)));
+  return paths.map((ring) => ring.map((p) => new google.maps.LatLng(p.lat, p.lng)));
 }
 
 function itemOptions(item: PolygonItem, interactive: boolean): google.maps.PolygonOptions {
@@ -47,11 +47,11 @@ export function PolygonLayer(props: PolygonLayerProps) {
 
   useEffect(() => {
     const registry = registryRef.current;
-    const incomingIds = new Set(props.areas.map(a => a.id));
+    const incomingIds = new Set(props.areas.map((a) => a.id));
 
     for (const [id, entry] of registry) {
       if (!incomingIds.has(id)) {
-        entry.listeners.forEach(l => google.maps.event.removeListener(l));
+        entry.listeners.forEach((l) => google.maps.event.removeListener(l));
         entry.polygon.setMap(null);
         registry.delete(id);
       }

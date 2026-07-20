@@ -1,4 +1,8 @@
-import type { MarkerEditorControlsState, MarkerEditorProps, MarkerMetadata } from './MarkerEditor.types';
+import type {
+  MarkerEditorControlsState,
+  MarkerEditorProps,
+  MarkerMetadata,
+} from './MarkerEditor.types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { EditorButtonState } from '../MapEditorShell/EditorContext';
@@ -154,9 +158,11 @@ export function MarkerEditor(props: MarkerEditorProps) {
   const showMarker = isActive && markerPosition !== null;
   const dragEnabled = props.dragEnabled ?? true;
 
-  const markerInstance = useMarker(map, showMarker
-    ? { position: markerPosition ?? undefined, gmpDraggable: isEditing && dragEnabled }
-    : { position: undefined },
+  const markerInstance = useMarker(
+    map,
+    showMarker
+      ? { position: markerPosition ?? undefined, gmpDraggable: isEditing && dragEnabled }
+      : { position: undefined },
   );
 
   useEffect(() => {
@@ -184,4 +190,3 @@ export function MarkerEditor(props: MarkerEditorProps) {
 
   return null;
 }
-

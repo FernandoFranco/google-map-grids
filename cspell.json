@@ -1,14 +1,9 @@
 {
-    "version": "0.2",
-    "ignorePaths": [],
-    "dictionaryDefinitions": [],
-    "dictionaries": [],
-    "words": [
-        "antimeridian",
-        "autodocs",
-        "lngs",
-        "Mgrs"
-    ],
-    "ignoreWords": [],
-    "import": []
+  "version": "0.2",
+  "ignorePaths": [],
+  "dictionaryDefinitions": [],
+  "dictionaries": [],
+  "words": ["antimeridian", "autodocs", "lngs", "Mgrs", "vite"],
+  "ignoreWords": [],
+  "import": []
 }

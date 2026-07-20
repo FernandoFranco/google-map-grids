@@ -4,7 +4,12 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { GoogleMap } from '../GoogleMap/GoogleMap';
 import { GoogleMapsProvider } from '../GoogleMapsProvider/GoogleMapsProvider';
 import { MapEditorShell, type EditorButtonState } from '../MapEditorShell/MapEditorShell';
-import { MarkerEditor, type MarkerData, type MarkerEditorControlsState, type MarkerEditorProps } from './MarkerEditor';
+import {
+  MarkerEditor,
+  type MarkerData,
+  type MarkerEditorControlsState,
+  type MarkerEditorProps,
+} from './MarkerEditor';
 import { MarkerLayer } from '../MarkerLayer/MarkerLayer';
 
 type MarkerEditorStoryArgs = MarkerEditorProps & { apiKey: string };
@@ -177,7 +182,9 @@ function CreationDemo(args: MarkerEditorStoryArgs) {
       <GoogleMapsProvider apiKey={args.apiKey}>
         <MapEditorShell>
           <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={500}>
-            <MarkerLayer items={markers.map((m) => ({ id: m.id, position: m.position, title: m.name }))} />
+            <MarkerLayer
+              items={markers.map((m) => ({ id: m.id, position: m.position, title: m.name }))}
+            />
             <MarkerEditor
               renderButton={renderMarkerButton}
               renderControls={renderMarkerControls}
@@ -190,7 +197,9 @@ function CreationDemo(args: MarkerEditorStoryArgs) {
                 req.onConfirm({ name, icon: 'default', color: '#1a73e8' });
               }}
               onAdd={(marker) => setMarkers((prev) => [...prev, marker])}
-              onUpdate={(marker) => setMarkers((prev) => prev.map((m) => (m.id === marker.id ? marker : m)))}
+              onUpdate={(marker) =>
+                setMarkers((prev) => prev.map((m) => (m.id === marker.id ? marker : m)))
+              }
               onDelete={(marker) => setMarkers((prev) => prev.filter((m) => m.id !== marker.id))}
               onCancel={() => console.log('onCancel')}
             />
@@ -227,10 +236,16 @@ function EditOnlyDemo(args: MarkerEditorStoryArgs) {
                   req.onCancel();
                   return;
                 }
-                req.onConfirm({ name, icon: req.current.icon ?? 'default', color: req.current.color ?? '#1a73e8' });
+                req.onConfirm({
+                  name,
+                  icon: req.current.icon ?? 'default',
+                  color: req.current.color ?? '#1a73e8',
+                });
               }}
               onAdd={(marker) => setMarkers((prev) => [...prev, marker])}
-              onUpdate={(marker) => setMarkers((prev) => prev.map((m) => (m.id === marker.id ? marker : m)))}
+              onUpdate={(marker) =>
+                setMarkers((prev) => prev.map((m) => (m.id === marker.id ? marker : m)))
+              }
               onDelete={(marker) => setMarkers((prev) => prev.filter((m) => m.id !== marker.id))}
               onEditEnd={() => setEditingMarker(null)}
               onCancel={() => console.log('onCancel')}
@@ -265,8 +280,15 @@ function PlaygroundDemo(args: MarkerEditorStoryArgs) {
               dragEnabled={args.dragEnabled}
               onMetadataRequest={(req) => {
                 const name = window.prompt('Nome:', req.current.name ?? '') ?? '';
-                if (!name) { req.onCancel(); return; }
-                req.onConfirm({ name, icon: req.current.icon ?? 'default', color: req.current.color ?? '#1a73e8' });
+                if (!name) {
+                  req.onCancel();
+                  return;
+                }
+                req.onConfirm({
+                  name,
+                  icon: req.current.icon ?? 'default',
+                  color: req.current.color ?? '#1a73e8',
+                });
               }}
               onAdd={(marker) => {
                 setMarkers((prev) => [...prev, marker]);

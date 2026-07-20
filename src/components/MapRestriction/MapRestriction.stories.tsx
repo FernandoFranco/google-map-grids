@@ -6,11 +6,11 @@ import { MapRestriction, type MapRestrictionProps } from './MapRestriction';
 type MapRestrictionStoryArgs = MapRestrictionProps & { apiKey: string };
 
 const SP_POLYGON: google.maps.LatLngLiteral[] = [
-  { lat: -23.50, lng: -46.63 },
+  { lat: -23.5, lng: -46.63 },
   { lat: -23.54, lng: -46.59 },
-  { lat: -23.58, lng: -46.60 },
-  { lat: -23.60, lng: -46.64 },
-  { lat: -23.56, lng: -46.70 },
+  { lat: -23.58, lng: -46.6 },
+  { lat: -23.6, lng: -46.64 },
+  { lat: -23.56, lng: -46.7 },
   { lat: -23.52, lng: -46.66 },
 ];
 
@@ -18,7 +18,7 @@ const SP_POLYGON_CCW: google.maps.LatLngLiteral[] = [...SP_POLYGON].reverse();
 
 const LA_POLYGON: google.maps.LatLngLiteral[] = [
   { lat: 34.08, lng: -118.24 },
-  { lat: 34.06, lng: -118.20 },
+  { lat: 34.06, lng: -118.2 },
   { lat: 34.03, lng: -118.21 },
   { lat: 34.02, lng: -118.25 },
   { lat: 34.04, lng: -118.28 },
@@ -53,14 +53,15 @@ const meta = {
     },
     overlayPadding: {
       control: { type: 'number', min: 1, max: 180, step: 1 },
-      description: 'Degrees of padding added around the bounding box to form the outer overlay ring (default: 60)',
+      description:
+        'Degrees of padding added around the bounding box to form the outer overlay ring (default: 60)',
     },
   },
   decorators: [
     (Story, context) => {
       const polygon = context.args['polygon'] as google.maps.LatLngLiteral[];
-      const lats = polygon.map(p => p.lat);
-      const lngs = polygon.map(p => p.lng);
+      const lats = polygon.map((p) => p.lat);
+      const lngs = polygon.map((p) => p.lng);
       const center = {
         lat: (Math.max(...lats) + Math.min(...lats)) / 2,
         lng: (Math.max(...lngs) + Math.min(...lngs)) / 2,

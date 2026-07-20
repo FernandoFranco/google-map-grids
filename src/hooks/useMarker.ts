@@ -18,7 +18,9 @@ export function useMarker(
     let created: google.maps.marker.AdvancedMarkerElement | null = null;
 
     void (async () => {
-      const { AdvancedMarkerElement } = (await importLibrary('marker')) as google.maps.MarkerLibrary;
+      const { AdvancedMarkerElement } = (await importLibrary(
+        'marker',
+      )) as google.maps.MarkerLibrary;
       if (disposed) return;
 
       created = new AdvancedMarkerElement({ map, ...optionsRef.current });

@@ -87,7 +87,7 @@ export function MarkerLayer(props: MarkerLayerProps) {
         event.preventDefault();
         event.stopPropagation();
 
-        const current = itemsRef.current.find(currentItem => currentItem.id === id);
+        const current = itemsRef.current.find((currentItem) => currentItem.id === id);
         if (!current) return;
 
         onRightClickRef.current?.(current, event.clientX, event.clientY);
@@ -104,11 +104,11 @@ export function MarkerLayer(props: MarkerLayerProps) {
       const markerLibrary = (await importLibrary('marker')) as google.maps.MarkerLibrary;
       if (disposed) return;
 
-      const incomingIds = new Set(props.items.map(item => item.id));
+      const incomingIds = new Set(props.items.map((item) => item.id));
 
       for (const [id, entry] of registry) {
         if (!incomingIds.has(id)) {
-          entry.listeners.forEach(listener => google.maps.event.removeListener(listener));
+          entry.listeners.forEach((listener) => google.maps.event.removeListener(listener));
           entry.cleanupContextMenu();
           entry.cleanupContent();
           entry.marker.map = null;
@@ -145,7 +145,7 @@ export function MarkerLayer(props: MarkerLayerProps) {
 
         listeners.push(
           marker.addListener('click', () => {
-            const current = itemsRef.current.find(currentItem => currentItem.id === item.id);
+            const current = itemsRef.current.find((currentItem) => currentItem.id === item.id);
             if (!current) return;
             onClickRef.current?.(current);
           }),
@@ -172,7 +172,7 @@ export function MarkerLayer(props: MarkerLayerProps) {
 
     return () => {
       for (const [, entry] of registry) {
-        entry.listeners.forEach(listener => google.maps.event.removeListener(listener));
+        entry.listeners.forEach((listener) => google.maps.event.removeListener(listener));
         entry.cleanupContextMenu();
         entry.cleanupContent();
         entry.marker.map = null;

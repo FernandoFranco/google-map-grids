@@ -1,7 +1,15 @@
-import type { PolygonData, PolygonEditorControlsState, PolygonEditorProps, PolygonMetadata } from './PolygonEditor.types';
+import type {
+  PolygonData,
+  PolygonEditorControlsState,
+  PolygonEditorProps,
+  PolygonMetadata,
+} from './PolygonEditor.types';
 import { useEffect, useRef, useState } from 'react';
 
-import { useDrawingEditorCore, type DrawingEditorControlsState } from '../../hooks/useDrawingEditorCore';
+import {
+  useDrawingEditorCore,
+  type DrawingEditorControlsState,
+} from '../../hooks/useDrawingEditorCore';
 import { useEditorContext } from '../MapEditorShell/useEditorContext';
 
 export type {
@@ -41,7 +49,7 @@ export function PolygonEditor(props: PolygonEditorProps) {
     propsRef.current.onMetadataRequest({
       mode: editingArea ? 'edit' : 'create',
       current: editingArea ? { ...editingArea, ...pendingMetadata } : { ...pendingMetadata },
-      onConfirm: metadata => setPendingMetadata(metadata),
+      onConfirm: (metadata) => setPendingMetadata(metadata),
       onCancel: () => {},
     });
   };
@@ -51,7 +59,7 @@ export function PolygonEditor(props: PolygonEditorProps) {
     nodeStyle: props.nodeStyle,
     lineStyle: props.lineStyle,
     initialNodes: props.editingArea?.paths[0],
-    onShapeComplete: nodes => {
+    onShapeComplete: (nodes) => {
       const editingArea = lockedAreaRef.current;
       if (editingArea) {
         propsRef.current.onUpdate({ ...editingArea, ...pendingMetadata, paths: [nodes] });

@@ -60,7 +60,8 @@ export function MapEditorShell(props: PropsWithChildren<MapEditorShellProps>) {
   );
 
   const sidebarPos = props.sidebarPosition ?? 'left';
-  const resolvedSidebarWidth = typeof props.sidebarWidth === 'number' ? `${props.sidebarWidth}px` : props.sidebarWidth;
+  const resolvedSidebarWidth =
+    typeof props.sidebarWidth === 'number' ? `${props.sidebarWidth}px` : props.sidebarWidth;
 
   const wrapperStyle: React.CSSProperties = {
     display: 'flex',

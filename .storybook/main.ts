@@ -18,6 +18,12 @@ const config: StorybookConfig = {
       exclude: ['**/.storybook/**'],
     },
   },
+  viteFinal: async (config) => {
+    if (process.env.BASE_PATH) {
+      config.base = process.env.BASE_PATH;
+    }
+    return config;
+  },
 };
 
 export default config;

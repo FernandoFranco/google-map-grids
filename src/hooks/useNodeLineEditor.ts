@@ -125,7 +125,7 @@ export function useNodeLineEditor(options: UseNodeLineEditorOptions): UseNodeLin
   });
 
   function syncNodesFromMarkers() {
-    setNodes(markersRef.current.map(marker => toLatLngLiteral(marker.position)));
+    setNodes(markersRef.current.map((marker) => toLatLngLiteral(marker.position)));
   }
 
   function attachDrag(marker: google.maps.marker.AdvancedMarkerElement) {
@@ -154,7 +154,11 @@ export function useNodeLineEditor(options: UseNodeLineEditorOptions): UseNodeLin
     segmentListenersRef.current.push(listener);
   }
 
-  function insertNode(afterIndex: number, pos: google.maps.LatLngLiteral, markerLib: google.maps.MarkerLibrary) {
+  function insertNode(
+    afterIndex: number,
+    pos: google.maps.LatLngLiteral,
+    markerLib: google.maps.MarkerLibrary,
+  ) {
     const map = optionsRef.current.map;
     const insertPos = afterIndex + 1;
 
@@ -186,12 +190,12 @@ export function useNodeLineEditor(options: UseNodeLineEditorOptions): UseNodeLin
     const map = optionsRef.current.map;
     const n = markersRef.current.length;
 
-    markersRef.current.forEach(marker => {
+    markersRef.current.forEach((marker) => {
       marker.gmpDraggable = true;
       attachDrag(marker);
     });
 
-    const positions = markersRef.current.map(marker => toLatLngLiteral(marker.position));
+    const positions = markersRef.current.map((marker) => toLatLngLiteral(marker.position));
     for (let i = 0; i < n; i++) {
       const segment = new google.maps.Polyline({
         map,
@@ -219,7 +223,11 @@ export function useNodeLineEditor(options: UseNodeLineEditorOptions): UseNodeLin
     markersRef.current.push(marker);
 
     if (!mainlineRef.current) {
-      mainlineRef.current = new google.maps.Polyline({ map, path: [pos], ...lineOptions(optionsRef.current.lineStyle) });
+      mainlineRef.current = new google.maps.Polyline({
+        map,
+        path: [pos],
+        ...lineOptions(optionsRef.current.lineStyle),
+      });
     } else {
       mainlineRef.current.getPath().push(new google.maps.LatLng(pos));
     }
@@ -284,7 +292,7 @@ export function useNodeLineEditor(options: UseNodeLineEditorOptions): UseNodeLin
     const map = optionsRef.current.map;
     const nodeStyle = optionsRef.current.nodeStyle;
 
-    seed.forEach(pos => {
+    seed.forEach((pos) => {
       const marker = new markerLib.AdvancedMarkerElement({
         map,
         position: pos,
@@ -306,13 +314,15 @@ export function useNodeLineEditor(options: UseNodeLineEditorOptions): UseNodeLin
       google.maps.event.removeListener(node0CloseListenerRef.current);
       node0CloseListenerRef.current = null;
     }
-    markerDragListenersRef.current.forEach(listener => google.maps.event.removeListener(listener));
+    markerDragListenersRef.current.forEach((listener) =>
+      google.maps.event.removeListener(listener),
+    );
     markerDragListenersRef.current = [];
-    segmentListenersRef.current.forEach(listener => google.maps.event.removeListener(listener));
+    segmentListenersRef.current.forEach((listener) => google.maps.event.removeListener(listener));
     segmentListenersRef.current = [];
-    segmentsRef.current.forEach(segment => segment.setMap(null));
+    segmentsRef.current.forEach((segment) => segment.setMap(null));
     segmentsRef.current = [];
-    markersRef.current.forEach(marker => {
+    markersRef.current.forEach((marker) => {
       marker.map = null;
     });
     markersRef.current = [];

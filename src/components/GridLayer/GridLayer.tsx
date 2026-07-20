@@ -52,7 +52,9 @@ export function GridLayer(props: GridLayerProps) {
     const bounds = { north: gridNorth, south: gridSouth, east: gridEast, west: gridWest };
 
     map.setOptions({ restriction: { latLngBounds: bounds, strictBounds: false } });
-    const fitBoundsTimer = setTimeout(() => { map.fitBounds(bounds, 4); }, 0);
+    const fitBoundsTimer = setTimeout(() => {
+      map.fitBounds(bounds, 4);
+    }, 0);
 
     const strokeOpts = {
       strokeColor: props.strokeColor ?? '#FFFFFF',
@@ -70,7 +72,10 @@ export function GridLayer(props: GridLayerProps) {
       polylines.push(
         new google.maps.Polyline({
           map,
-          path: [{ lat, lng: gridWest }, { lat, lng: gridEast }],
+          path: [
+            { lat, lng: gridWest },
+            { lat, lng: gridEast },
+          ],
           ...strokeOpts,
         }),
       );
@@ -82,7 +87,10 @@ export function GridLayer(props: GridLayerProps) {
       polylines.push(
         new google.maps.Polyline({
           map,
-          path: [{ lat: gridSouth, lng }, { lat: gridNorth, lng }],
+          path: [
+            { lat: gridSouth, lng },
+            { lat: gridNorth, lng },
+          ],
           ...strokeOpts,
         }),
       );
@@ -95,10 +103,18 @@ export function GridLayer(props: GridLayerProps) {
 
     const labelData: Array<{ lat: number; lng: number; text: string }> = [];
     for (let i = 0; i < colCount; i++) {
-      labelData.push({ lat: gridNorth, lng: gridWest + (i + 0.5) * cellDegLng, text: String(i + 1) });
+      labelData.push({
+        lat: gridNorth,
+        lng: gridWest + (i + 0.5) * cellDegLng,
+        text: String(i + 1),
+      });
     }
     for (let j = 0; j < rowCount; j++) {
-      labelData.push({ lat: gridSouth + (j + 0.5) * cellDegLat, lng: gridWest, text: columnLabel(rowCount - 1 - j) });
+      labelData.push({
+        lat: gridSouth + (j + 0.5) * cellDegLat,
+        lng: gridWest,
+        text: columnLabel(rowCount - 1 - j),
+      });
     }
 
     class GridLabels extends google.maps.OverlayView {
@@ -106,7 +122,8 @@ export function GridLayer(props: GridLayerProps) {
 
       onAdd() {
         this.container = document.createElement('div');
-        this.container.style.cssText = 'position:absolute;top:0;left:0;width:0;height:0;pointer-events:none;';
+        this.container.style.cssText =
+          'position:absolute;top:0;left:0;width:0;height:0;pointer-events:none;';
         for (let idx = 0; idx < labelData.length; idx++) {
           const span = document.createElement('span');
           span.style.cssText =
@@ -124,7 +141,9 @@ export function GridLayer(props: GridLayerProps) {
         const proj = this.getProjection();
         const spans = this.container.children;
         for (let i = 0; i < labelData.length; i++) {
-          const px = proj.fromLatLngToDivPixel(new google.maps.LatLng(labelData[i].lat, labelData[i].lng));
+          const px = proj.fromLatLngToDivPixel(
+            new google.maps.LatLng(labelData[i].lat, labelData[i].lng),
+          );
           if (px) {
             (spans[i] as HTMLElement).style.left = `${px.x}px`;
             (spans[i] as HTMLElement).style.top = `${px.y}px`;
@@ -144,7 +163,7 @@ export function GridLayer(props: GridLayerProps) {
 
     return () => {
       clearTimeout(fitBoundsTimer);
-      polylinesRef.current.forEach(p => p.setMap(null));
+      polylinesRef.current.forEach((p) => p.setMap(null));
       polylinesRef.current = [];
       overlayRef.current?.setMap(null);
       overlayRef.current = null;
@@ -157,7 +176,7 @@ export function GridLayer(props: GridLayerProps) {
       strokeOpacity: props.strokeOpacity ?? 0.8,
       strokeWeight: props.strokeWeight ?? 1,
     };
-    polylinesRef.current.forEach(p => p.setOptions(options));
+    polylinesRef.current.forEach((p) => p.setOptions(options));
   }, [props.strokeColor, props.strokeOpacity, props.strokeWeight]);
 
   return null;

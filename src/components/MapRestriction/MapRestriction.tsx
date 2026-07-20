@@ -14,7 +14,6 @@ export interface MapRestrictionProps {
 
 const EDIT_BOUNDS_PADDING_FRACTION = 0.15;
 
-
 function toClockwise(polygon: google.maps.LatLngLiteral[]): google.maps.LatLngLiteral[] {
   let area = 0;
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
@@ -68,7 +67,14 @@ export function MapRestriction(props: MapRestrictionProps) {
       { lat: Math.min(rawBounds.north + pad, 85), lng: Math.max(rawBounds.west - pad, -180) },
     ];
     return [outerRing, toClockwise(props.polygon)];
-  }, [rawBounds.north, rawBounds.south, rawBounds.east, rawBounds.west, props.polygon, props.overlayPadding]);
+  }, [
+    rawBounds.north,
+    rawBounds.south,
+    rawBounds.east,
+    rawBounds.west,
+    props.polygon,
+    props.overlayPadding,
+  ]);
 
   const overlayOptions = useMemo(
     () => ({

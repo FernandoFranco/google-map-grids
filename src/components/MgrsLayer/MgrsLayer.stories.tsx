@@ -7,8 +7,8 @@ import { MgrsLayer, type MgrsLayerProps, type MgrsPrecision } from './MgrsLayer'
 type MgrsLayerStoryArgs = MgrsLayerProps & { apiKey: string };
 
 const SP_POLYGON: google.maps.LatLngLiteral[] = [
-  { lat: -23.538, lng: -46.620 },
-  { lat: -23.542, lng: -46.610 },
+  { lat: -23.538, lng: -46.62 },
+  { lat: -23.542, lng: -46.61 },
   { lat: -23.552, lng: -46.612 },
   { lat: -23.556, lng: -46.622 },
   { lat: -23.552, lng: -46.633 },
@@ -18,9 +18,9 @@ const SP_POLYGON: google.maps.LatLngLiteral[] = [
 const LA_POLYGON: google.maps.LatLngLiteral[] = [
   { lat: 34.063, lng: -118.235 },
   { lat: 34.059, lng: -118.223 },
-  { lat: 34.050, lng: -118.225 },
+  { lat: 34.05, lng: -118.225 },
   { lat: 34.046, lng: -118.237 },
-  { lat: 34.050, lng: -118.249 },
+  { lat: 34.05, lng: -118.249 },
   { lat: 34.059, lng: -118.247 },
 ];
 
@@ -43,7 +43,10 @@ const meta = {
       description: 'Array of LatLngLiteral vertices defining the grid area',
     },
     precision: {
-      control: { type: 'select', labels: { 1: '1m', 10: '10m', 100: '100m', 1000: '1km', 10000: '10km', 100000: '100km' } },
+      control: {
+        type: 'select',
+        labels: { 1: '1m', 10: '10m', 100: '100m', 1000: '1km', 10000: '10km', 100000: '100km' },
+      },
       options: [1, 10, 100, 1000, 10000, 100000] as MgrsPrecision[],
       description: 'MGRS precision level in meters',
     },
@@ -68,8 +71,8 @@ const meta = {
   decorators: [
     (Story, context) => {
       const polygon = context.args['polygon'] as google.maps.LatLngLiteral[];
-      const lats = polygon.map(p => p.lat);
-      const lngs = polygon.map(p => p.lng);
+      const lats = polygon.map((p) => p.lat);
+      const lngs = polygon.map((p) => p.lng);
       const center = {
         lat: (Math.max(...lats) + Math.min(...lats)) / 2,
         lng: (Math.max(...lngs) + Math.min(...lngs)) / 2,
