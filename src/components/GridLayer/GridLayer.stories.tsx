@@ -27,15 +27,25 @@ const LA_POLYGON: google.maps.LatLngLiteral[] = [
 const defaultApiKey =
   (import.meta as { env?: Record<string, string> }).env?.VITE_GOOGLE_MAPS_API_KEY ?? '';
 
+const USAGE_EXAMPLE_CODE = `<GoogleMapsProvider apiKey="YOUR_GOOGLE_MAPS_API_KEY">
+  <GoogleMap center={{ lat: -23.548, lng: -46.62 }} zoom={13} height={500} mapId="YOUR_MAP_ID">
+    <GridLayer polygon={polygon} cellSize={500} strokeColor="#FFFFFF" strokeOpacity={0.8} strokeWeight={1} />
+  </GoogleMap>
+</GoogleMapsProvider>`;
+
 const meta = {
   title: 'Components/GridLayer',
   component: GridLayer,
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    docs: { source: { code: USAGE_EXAMPLE_CODE, language: 'tsx', type: 'code' } },
+  },
   tags: ['autodocs'],
   argTypes: {
     apiKey: {
       control: 'text',
-      description: 'Google Maps API Key',
+      description:
+        "Leave empty to use this demo's restricted API key. Paste your own Google Maps API key to preview with it instead.",
       table: { category: 'Provider' },
     },
     polygon: {
@@ -69,7 +79,7 @@ const meta = {
         lng: (Math.max(...lngs) + Math.min(...lngs)) / 2,
       };
       return (
-        <GoogleMapsProvider apiKey={context.args['apiKey'] as string}>
+        <GoogleMapsProvider apiKey={(context.args['apiKey'] as string)?.trim() || defaultApiKey}>
           <GoogleMap center={center} zoom={13} height={500} mapId="DEMO_MAP_ID">
             <MapRestriction polygon={polygon} />
             <Story />
@@ -85,7 +95,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    apiKey: defaultApiKey,
+    apiKey: '',
     polygon: SP_POLYGON,
     cellSize: 500,
     strokeColor: '#FFFFFF',
@@ -96,7 +106,7 @@ export const Default: Story = {
 
 export const SmallCells: Story = {
   args: {
-    apiKey: defaultApiKey,
+    apiKey: '',
     polygon: SP_POLYGON,
     cellSize: 100,
     strokeColor: '#FFFFFF',
@@ -107,7 +117,7 @@ export const SmallCells: Story = {
 
 export const LargeArea: Story = {
   args: {
-    apiKey: defaultApiKey,
+    apiKey: '',
     polygon: LA_POLYGON,
     cellSize: 1000,
     strokeColor: '#FFFFFF',

@@ -81,15 +81,25 @@ const CUSTOM_ICON_ITEMS: MarkerItem[] = [
 const defaultApiKey =
   (import.meta as { env?: Record<string, string> }).env?.VITE_GOOGLE_MAPS_API_KEY ?? '';
 
+const USAGE_EXAMPLE_CODE = `<GoogleMapsProvider apiKey="YOUR_GOOGLE_MAPS_API_KEY">
+  <GoogleMap center={{ lat: -23.5475, lng: -46.6361 }} zoom={14} height={500} mapId="YOUR_MAP_ID">
+    <MarkerLayer items={items} />
+  </GoogleMap>
+</GoogleMapsProvider>`;
+
 const meta = {
   title: 'Components/MarkerLayer',
   component: MarkerLayer,
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    docs: { source: { code: USAGE_EXAMPLE_CODE, language: 'tsx', type: 'code' } },
+  },
   tags: ['autodocs'],
   argTypes: {
     apiKey: {
       control: 'text',
-      description: 'Google Maps API Key',
+      description:
+        "Leave empty to use this demo's restricted API key. Paste your own Google Maps API key to preview with it instead.",
       table: { category: 'Provider' },
     },
     items: {
@@ -119,7 +129,7 @@ const meta = {
       };
 
       return (
-        <GoogleMapsProvider apiKey={context.args['apiKey'] as string}>
+        <GoogleMapsProvider apiKey={(context.args['apiKey'] as string)?.trim() || defaultApiKey}>
           <GoogleMap center={center} zoom={14} height={500} mapId="DEMO_MAP_ID">
             <Story />
           </GoogleMap>
@@ -135,14 +145,14 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    apiKey: defaultApiKey,
+    apiKey: '',
     items: DEFAULT_ITEMS,
   },
 };
 
 export const WithClick: Story = {
   args: {
-    apiKey: defaultApiKey,
+    apiKey: '',
     items: DEFAULT_ITEMS,
     onClick: (item) =>
       alert(
@@ -153,7 +163,7 @@ export const WithClick: Story = {
 
 export const WithRightClick: Story = {
   args: {
-    apiKey: defaultApiKey,
+    apiKey: '',
     items: DEFAULT_ITEMS,
     onRightClick: (item, x, y) =>
       alert(
@@ -164,7 +174,7 @@ export const WithRightClick: Story = {
 
 export const WithCustomReactIcons: Story = {
   args: {
-    apiKey: defaultApiKey,
+    apiKey: '',
     items: CUSTOM_ICON_ITEMS,
     onClick: (item) =>
       alert(
