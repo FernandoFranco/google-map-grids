@@ -158,7 +158,7 @@ function DefaultDemo(args: MapRestrictionEditorStoryArgs) {
   return (
     <>
       <style>{DEMO_STYLES}</style>
-      <GoogleMapsProvider apiKey={args.apiKey}>
+      <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
         <MapEditorShell>
           <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
             {restriction && <MapRestriction polygon={restriction} padded={isEditing} />}
@@ -182,7 +182,7 @@ function EditExistingDemo(args: MapRestrictionEditorStoryArgs) {
   return (
     <>
       <style>{DEMO_STYLES}</style>
-      <GoogleMapsProvider apiKey={args.apiKey}>
+      <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
         <MapEditorShell>
           <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
             <MapRestriction polygon={restriction} padded={isEditing} />
@@ -212,7 +212,7 @@ function PlaygroundDemo(args: MapRestrictionEditorStoryArgs) {
       <button type="button" className={RESET_BUTTON_CLASS} onClick={() => setRestriction(null)}>
         Reset restriction
       </button>
-      <GoogleMapsProvider apiKey={args.apiKey}>
+      <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
         <MapEditorShell>
           <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
             {restriction && <MapRestriction polygon={restriction} padded={isEditing} />}
@@ -243,7 +243,8 @@ const meta = {
   argTypes: {
     apiKey: {
       control: 'text',
-      description: 'Google Maps API Key',
+      description:
+        "Leave empty to use this demo's restricted API key. Paste your own Google Maps API key to preview with it instead.",
       table: { category: 'Provider' },
     },
     currentRestriction: {
@@ -394,7 +395,7 @@ const PLAYGROUND_EXAMPLE_CODE = `function MapRestrictionEditorDemo() {
 }`;
 
 export const Default: Story = {
-  args: { apiKey: defaultApiKey },
+  args: { apiKey: '' },
   render: (args) => <DefaultDemo {...args} />,
   parameters: {
     docs: { source: { code: DEFAULT_EXAMPLE_CODE, language: 'tsx', type: 'code' } },
@@ -402,7 +403,7 @@ export const Default: Story = {
 };
 
 export const EditExisting: Story = {
-  args: { apiKey: defaultApiKey },
+  args: { apiKey: '' },
   render: (args) => <EditExistingDemo {...args} />,
   parameters: {
     docs: { source: { code: EDIT_EXISTING_EXAMPLE_CODE, language: 'tsx', type: 'code' } },
@@ -410,7 +411,7 @@ export const EditExisting: Story = {
 };
 
 export const Playground: Story = {
-  args: { apiKey: defaultApiKey },
+  args: { apiKey: '' },
   render: (args) => <PlaygroundDemo {...args} />,
   parameters: {
     docs: { source: { code: PLAYGROUND_EXAMPLE_CODE, language: 'tsx', type: 'code' } },

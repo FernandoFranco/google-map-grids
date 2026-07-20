@@ -146,7 +146,7 @@ Each component has a `.spec.md` in `specs/` describing its full contract. Read t
 - **Playground** via Controls — all relevant props exposed as args with proper `control` and `description` in `argTypes`
 - **Variation stories** for the most relevant states or configurations (e.g., different layouts, error states, sizes)
 
-For components that depend on `GoogleMapsProvider`, add it as a `decorators` entry in the story meta (not inside the component itself) and expose `apiKey` as an extra arg that defaults to `import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? ''`.
+For components that depend on `GoogleMapsProvider`, add it as a `decorators` entry in the story meta (not inside the component itself) and expose `apiKey` as an extra editable arg — but default it to `''`, never to the real key. Resolve the key actually used to render as `(args.apiKey?.trim() || (import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? ''))` inside the decorator (or `render`, for stories that define one): the published demo still works out of the box, a visitor can override it with their own key, and the real key never sits in the `args` object as a visible Controls default. Also set an explicit `parameters.docs.source = { type: 'code', code: '...' }` with a placeholder key (e.g. `"YOUR_GOOGLE_MAPS_API_KEY"`) — left on the default `'auto'` mode, Storybook's "Show code" panel substitutes the live resolved arg values into the snippet, which would leak the real key there too.
 
 Stories live at `src/**/*.stories.tsx` (co-located with components). Use the `satisfies` pattern for full type inference:
 

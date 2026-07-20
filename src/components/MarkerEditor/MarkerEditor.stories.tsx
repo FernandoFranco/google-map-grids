@@ -179,7 +179,7 @@ function CreationDemo(args: MarkerEditorStoryArgs) {
   return (
     <>
       <style>{DEMO_STYLES}</style>
-      <GoogleMapsProvider apiKey={args.apiKey}>
+      <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
         <MapEditorShell>
           <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={500}>
             <MarkerLayer
@@ -217,7 +217,7 @@ function EditOnlyDemo(args: MarkerEditorStoryArgs) {
   return (
     <>
       <style>{DEMO_STYLES}</style>
-      <GoogleMapsProvider apiKey={args.apiKey}>
+      <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
         <MapEditorShell>
           <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={500}>
             <MarkerLayer
@@ -264,7 +264,7 @@ function PlaygroundDemo(args: MarkerEditorStoryArgs) {
   return (
     <>
       <style>{DEMO_STYLES}</style>
-      <GoogleMapsProvider apiKey={args.apiKey}>
+      <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
         <MapEditorShell>
           <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={500}>
             <MarkerLayer
@@ -323,7 +323,8 @@ const meta = {
   argTypes: {
     apiKey: {
       control: 'text',
-      description: 'Google Maps API Key',
+      description:
+        "Leave empty to use this demo's restricted API key. Paste your own Google Maps API key to preview with it instead.",
       table: { category: 'Provider' },
     },
     dragEnabled: {
@@ -511,7 +512,7 @@ const PLAYGROUND_EXAMPLE_CODE = `function MarkerEditorDemo() {
 }`;
 
 export const Default: Story = {
-  args: { apiKey: defaultApiKey },
+  args: { apiKey: '' },
   render: (args) => <CreationDemo {...args} />,
   parameters: {
     docs: { source: { code: CREATION_EXAMPLE_CODE, language: 'tsx', type: 'code' } },
@@ -519,7 +520,7 @@ export const Default: Story = {
 };
 
 export const EditOnly: Story = {
-  args: { apiKey: defaultApiKey },
+  args: { apiKey: '' },
   render: (args) => <EditOnlyDemo {...args} />,
   parameters: {
     docs: { source: { code: EDIT_ONLY_EXAMPLE_CODE, language: 'tsx', type: 'code' } },
@@ -527,7 +528,7 @@ export const EditOnly: Story = {
 };
 
 export const Playground: Story = {
-  args: { apiKey: defaultApiKey, dragEnabled: true },
+  args: { apiKey: '', dragEnabled: true },
   render: (args) => <PlaygroundDemo {...args} />,
   parameters: {
     docs: { source: { code: PLAYGROUND_EXAMPLE_CODE, language: 'tsx', type: 'code' } },

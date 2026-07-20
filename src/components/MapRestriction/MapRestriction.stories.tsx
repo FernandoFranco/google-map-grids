@@ -28,15 +28,25 @@ const LA_POLYGON: google.maps.LatLngLiteral[] = [
 const defaultApiKey =
   (import.meta as { env?: Record<string, string> }).env?.VITE_GOOGLE_MAPS_API_KEY ?? '';
 
+const USAGE_EXAMPLE_CODE = `<GoogleMapsProvider apiKey="YOUR_GOOGLE_MAPS_API_KEY">
+  <GoogleMap center={{ lat: -23.55, lng: -46.63 }} zoom={13} height={500} mapId="YOUR_MAP_ID">
+    <MapRestriction polygon={polygon} overlayColor="#000000" overlayOpacity={0.8} />
+  </GoogleMap>
+</GoogleMapsProvider>`;
+
 const meta = {
   title: 'Components/MapRestriction',
   component: MapRestriction,
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    docs: { source: { code: USAGE_EXAMPLE_CODE, language: 'tsx', type: 'code' } },
+  },
   tags: ['autodocs'],
   argTypes: {
     apiKey: {
       control: 'text',
-      description: 'Google Maps API Key',
+      description:
+        "Leave empty to use this demo's restricted API key. Paste your own Google Maps API key to preview with it instead.",
       table: { category: 'Provider' },
     },
     polygon: {
@@ -67,7 +77,7 @@ const meta = {
         lng: (Math.max(...lngs) + Math.min(...lngs)) / 2,
       };
       return (
-        <GoogleMapsProvider apiKey={context.args['apiKey'] as string}>
+        <GoogleMapsProvider apiKey={(context.args['apiKey'] as string)?.trim() || defaultApiKey}>
           <GoogleMap center={center} zoom={13} height={500} mapId="DEMO_MAP_ID">
             <Story />
           </GoogleMap>
@@ -82,7 +92,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    apiKey: defaultApiKey,
+    apiKey: '',
     polygon: SP_POLYGON,
     overlayColor: '#000000',
     overlayOpacity: 0.8,
@@ -92,7 +102,7 @@ export const Default: Story = {
 
 export const CustomOverlay: Story = {
   args: {
-    apiKey: defaultApiKey,
+    apiKey: '',
     polygon: LA_POLYGON,
     overlayColor: '#1a237e',
     overlayOpacity: 0.6,
@@ -102,7 +112,7 @@ export const CustomOverlay: Story = {
 
 export const ClockwisePolygon: Story = {
   args: {
-    apiKey: defaultApiKey,
+    apiKey: '',
     polygon: SP_POLYGON_CCW,
     overlayColor: '#ff0000',
     overlayOpacity: 0.2,
