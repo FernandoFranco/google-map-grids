@@ -3,7 +3,27 @@
   "version": "0.1.0",
   "description": "React component library — Google Map Grids",
   "license": "MIT",
+  "author": "Fernando Franco <atr.franco@gmail.com> (https://github.com/FernandoFranco)",
+  "homepage": "https://fernandofranco.github.io/google-map-grids/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FernandoFranco/google-map-grids.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FernandoFranco/google-map-grids/issues"
+  },
+  "keywords": [
+    "react",
+    "google-maps",
+    "maps",
+    "grid",
+    "mgrs",
+    "utm",
+    "component-library",
+    "typescript"
+  ],
   "type": "module",
+  "sideEffects": false,
   "packageManager": "yarn@4.17.0",
   "files": [
     "dist"
@@ -17,6 +37,10 @@
       "require": "./dist/google-map-grids.cjs"
     }
   },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "vite build",
     "build:storybook": "storybook build",
@@ -25,6 +49,7 @@
     "format:check": "prettier --check .",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
+    "prepublishOnly": "yarn build",
     "storybook": "storybook dev -p 3000",
     "test": "vitest"
   },

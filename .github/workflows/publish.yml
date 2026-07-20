@@ -1,0 +1,47 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+          cache: yarn
+
+      - run: corepack enable
+
+      - run: yarn install --immutable
+
+      - name: Verify release tag matches package.json version
+        run: |
+          PKG_VERSION="v$(node -p "require('./package.json').version")"
+          TAG="${GITHUB_REF#refs/tags/}"
+          if [ "$PKG_VERSION" != "$TAG" ]; then
+            echo "::error::Release tag ($TAG) does not match package.json version ($PKG_VERSION)"
+            exit 1
+          fi
+
+      - run: yarn playwright install --with-deps chromium
+
+      - run: yarn lint
+
+      - run: yarn test
+
+      - run: yarn format:check
+
+      - run: yarn build
+
+      - run: yarn npm publish --access public --provenance
