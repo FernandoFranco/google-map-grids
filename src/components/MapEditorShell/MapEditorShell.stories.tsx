@@ -31,7 +31,11 @@ function MockEditor(props: { name: string; toolKey: string }) {
   useEditorTool({
     key: props.toolKey,
     button: (
-      <button type="button" className={DEMO_BUTTON_CLASS} onClick={() => activateEditor(props.toolKey)}>
+      <button
+        type="button"
+        className={DEMO_BUTTON_CLASS}
+        onClick={() => activateEditor(props.toolKey)}
+      >
         📍 {props.name}
       </button>
     ),

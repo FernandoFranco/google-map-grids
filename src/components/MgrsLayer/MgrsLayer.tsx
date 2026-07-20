@@ -26,8 +26,8 @@ function computeMgrsGrid(polygon: google.maps.LatLngLiteral[], precision: number
     latLngToUtm(south, west, zone),
     latLngToUtm(south, east, zone),
   ];
-  const eastings = corners.map(c => c.easting);
-  const northings = corners.map(c => c.northing);
+  const eastings = corners.map((c) => c.easting);
+  const northings = corners.map((c) => c.northing);
   return {
     zone,
     hemisphere,
@@ -70,13 +70,15 @@ export function MgrsLayer(props: MgrsLayerProps) {
       utmToLatLng(zone, hemisphere, utmEast, utmNorth),
     ];
     const bounds = {
-      north: Math.max(...gridCorners.map(c => c.lat)),
-      south: Math.min(...gridCorners.map(c => c.lat)),
-      east: Math.max(...gridCorners.map(c => c.lng)),
-      west: Math.min(...gridCorners.map(c => c.lng)),
+      north: Math.max(...gridCorners.map((c) => c.lat)),
+      south: Math.min(...gridCorners.map((c) => c.lat)),
+      east: Math.max(...gridCorners.map((c) => c.lng)),
+      west: Math.min(...gridCorners.map((c) => c.lng)),
     };
     map.setOptions({ restriction: { latLngBounds: bounds, strictBounds: false } });
-    const fitTimer = setTimeout(() => { map.fitBounds(bounds, 4); }, 0);
+    const fitTimer = setTimeout(() => {
+      map.fitBounds(bounds, 4);
+    }, 0);
 
     const SAMPLES = 20;
     const strokeOpts = {
@@ -170,7 +172,7 @@ export function MgrsLayer(props: MgrsLayerProps) {
 
     return () => {
       clearTimeout(fitTimer);
-      polylinesRef.current.forEach(p => p.setMap(null));
+      polylinesRef.current.forEach((p) => p.setMap(null));
       polylinesRef.current = [];
       overlayRef.current?.setMap(null);
       overlayRef.current = null;
@@ -183,7 +185,7 @@ export function MgrsLayer(props: MgrsLayerProps) {
       strokeOpacity: props.strokeOpacity ?? 0.8,
       strokeWeight: props.strokeWeight ?? 1,
     };
-    polylinesRef.current.forEach(p => p.setOptions(options));
+    polylinesRef.current.forEach((p) => p.setOptions(options));
   }, [props.strokeColor, props.strokeOpacity, props.strokeWeight]);
 
   return null;

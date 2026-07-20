@@ -34,9 +34,11 @@ This is a **library build**, not an application. Key constraints:
 ## Code Style Rules
 
 ### Comments
+
 Do **not** add comments unless they are strictly necessary (e.g. an `eslint-disable` with a reason, or a non-obvious workaround). Never add descriptive, explanatory, or JSDoc comments — the code and types should be self-documenting.
 
 ### Component pattern
+
 Always receive props as a single `props` object — never destructure in the function signature:
 
 ```tsx
@@ -50,6 +52,7 @@ export function MyComponent({ height, label }: MyComponentProps) { ... }
 ```
 
 ### Children
+
 Never include `children` in the component's own `Props` interface. Use `PropsWithChildren<Props>` from React instead:
 
 ```tsx
@@ -60,7 +63,12 @@ export interface MyComponentProps {
 }
 
 export function MyComponent(props: PropsWithChildren<MyComponentProps>) {
-  return <div><h1>{props.title}</h1>{props.children}</div>;
+  return (
+    <div>
+      <h1>{props.title}</h1>
+      {props.children}
+    </div>
+  );
 }
 ```
 
@@ -108,7 +116,9 @@ export function MyLayer(props: MyLayerProps) {
 
   useEffect(() => {
     // attach to map imperatively
-    return () => { /* cleanup on unmount */ };
+    return () => {
+      /* cleanup on unmount */
+    };
   }, [map, ...deps]);
 
   return null;
@@ -176,22 +186,22 @@ const { AdvancedMarkerElement } = await importLibrary('marker');
 
 Available libraries:
 
-| Library | Purpose |
-|---|---|
-| `core` | Base types: `LatLng`, `LatLngBounds`, events. Loaded by `GoogleMapsProvider` internally. |
-| `maps` | The `Map` class. Needed by any component that renders a map. |
-| `marker` | `AdvancedMarkerElement` — new marker API (replaces legacy `Marker`). |
-| `geometry` | Geometric calculations: distance, polygon area, polyline encode/decode. Most relevant for grid math. |
-| `places` | Address autocomplete, place details, nearby search. |
-| `drawing` | UI drawing tools on the map (polygons, circles, rectangles). |
-| `elevation` | Altitude/elevation data for coordinates. |
-| `geocoding` | Address ↔ coordinates conversion. |
-| `routes` | Directions and routing between points. |
-| `streetView` | Street View panoramas. |
-| `visualization` | Heatmaps. |
-| `journeySharing` | Fleet/ride-sharing real-time tracking UI. |
-| `addressValidation` | Postal address validation and normalization. |
-| `airQuality` | Air quality data by location. |
-| `maps3d` | 3D maps (beta). |
+| Library             | Purpose                                                                                              |
+| ------------------- | ---------------------------------------------------------------------------------------------------- |
+| `core`              | Base types: `LatLng`, `LatLngBounds`, events. Loaded by `GoogleMapsProvider` internally.             |
+| `maps`              | The `Map` class. Needed by any component that renders a map.                                         |
+| `marker`            | `AdvancedMarkerElement` — new marker API (replaces legacy `Marker`).                                 |
+| `geometry`          | Geometric calculations: distance, polygon area, polyline encode/decode. Most relevant for grid math. |
+| `places`            | Address autocomplete, place details, nearby search.                                                  |
+| `drawing`           | UI drawing tools on the map (polygons, circles, rectangles).                                         |
+| `elevation`         | Altitude/elevation data for coordinates.                                                             |
+| `geocoding`         | Address ↔ coordinates conversion.                                                                    |
+| `routes`            | Directions and routing between points.                                                               |
+| `streetView`        | Street View panoramas.                                                                               |
+| `visualization`     | Heatmaps.                                                                                            |
+| `journeySharing`    | Fleet/ride-sharing real-time tracking UI.                                                            |
+| `addressValidation` | Postal address validation and normalization.                                                         |
+| `airQuality`        | Air quality data by location.                                                                        |
+| `maps3d`            | 3D maps (beta).                                                                                      |
 
 Most relevant for this project: **`maps`**, **`marker`**, **`geometry`**.

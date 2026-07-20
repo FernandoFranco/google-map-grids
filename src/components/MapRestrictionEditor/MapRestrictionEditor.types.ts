@@ -1,4 +1,8 @@
-import type { DrawingEditorControlsState, LineStyle, NodeStyle } from '../../hooks/useDrawingEditorCore';
+import type {
+  DrawingEditorControlsState,
+  LineStyle,
+  NodeStyle,
+} from '../../hooks/useDrawingEditorCore';
 import type { EditorButtonState } from '../MapEditorShell/EditorContext';
 import type { ReactNode } from 'react';
 

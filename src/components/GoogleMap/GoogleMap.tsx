@@ -83,7 +83,11 @@ export function GoogleMap(props: PropsWithChildren<GoogleMapProps>) {
   return (
     <>
       <div ref={containerRef} style={containerStyle} className={props.className} />
-      {map && <MapContext.Provider value={{ map, mapId: props.mapId }}>{props.children}</MapContext.Provider>}
+      {map && (
+        <MapContext.Provider value={{ map, mapId: props.mapId }}>
+          {props.children}
+        </MapContext.Provider>
+      )}
     </>
   );
 }

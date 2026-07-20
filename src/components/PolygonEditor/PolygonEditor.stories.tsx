@@ -187,7 +187,9 @@ function DefaultDemo(args: PolygonEditorStoryArgs) {
                 req.onConfirm({ title, color: req.current.color ?? '#1a73e8' });
               }}
               onAdd={(area) => setAreas((prev) => [...prev, area])}
-              onUpdate={(area) => setAreas((prev) => prev.map((a) => (a.id === area.id ? area : a)))}
+              onUpdate={(area) =>
+                setAreas((prev) => prev.map((a) => (a.id === area.id ? area : a)))
+              }
               onCancel={() => console.log('onCancel')}
             />
           </GoogleMap>
@@ -227,7 +229,9 @@ function EditExistingDemo(args: PolygonEditorStoryArgs) {
                 req.onConfirm({ title, color: req.current.color ?? '#1a73e8' });
               }}
               onAdd={(area) => setAreas((prev) => [...prev, area])}
-              onUpdate={(area) => setAreas((prev) => prev.map((a) => (a.id === area.id ? area : a)))}
+              onUpdate={(area) =>
+                setAreas((prev) => prev.map((a) => (a.id === area.id ? area : a)))
+              }
               onEditEnd={() => setEditingArea(null)}
               onCancel={() => console.log('onCancel')}
             />

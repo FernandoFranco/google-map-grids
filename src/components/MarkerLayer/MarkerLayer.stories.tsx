@@ -103,15 +103,16 @@ const meta = {
     },
     onRightClick: {
       action: 'onRightClick',
-      description: 'Called with the MarkerItem and client (x, y) coordinates when a marker is right-clicked',
+      description:
+        'Called with the MarkerItem and client (x, y) coordinates when a marker is right-clicked',
       table: { category: 'Callbacks' },
     },
   },
   decorators: [
     (Story, context) => {
       const items = context.args['items'] as MarkerItem[];
-      const lats = items.map(point => point.position.lat);
-      const lngs = items.map(point => point.position.lng);
+      const lats = items.map((point) => point.position.lat);
+      const lngs = items.map((point) => point.position.lng);
       const center = {
         lat: (Math.max(...lats) + Math.min(...lats)) / 2,
         lng: (Math.max(...lngs) + Math.min(...lngs)) / 2,
@@ -143,7 +144,7 @@ export const WithClick: Story = {
   args: {
     apiKey: defaultApiKey,
     items: DEFAULT_ITEMS,
-    onClick: item =>
+    onClick: (item) =>
       alert(
         `ID: ${item.id}\nTítulo: ${item.title ?? 'sem título'}\nLatitude: ${item.position.lat}\nLongitude: ${item.position.lng}`,
       ),
@@ -165,7 +166,7 @@ export const WithCustomReactIcons: Story = {
   args: {
     apiKey: defaultApiKey,
     items: CUSTOM_ICON_ITEMS,
-    onClick: item =>
+    onClick: (item) =>
       alert(
         `ID: ${item.id}\nTítulo: ${item.title ?? 'sem título'}\nLatitude: ${item.position.lat}\nLongitude: ${item.position.lng}`,
       ),

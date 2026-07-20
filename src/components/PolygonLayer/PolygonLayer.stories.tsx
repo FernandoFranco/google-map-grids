@@ -27,7 +27,7 @@ const DEFAULT_AREAS: PolygonItem[] = [
     paths: [
       [
         { lat: -23.536, lng: -46.644 },
-        { lat: -23.540, lng: -46.631 },
+        { lat: -23.54, lng: -46.631 },
         { lat: -23.549, lng: -46.635 },
         { lat: -23.545, lng: -46.648 },
       ],
@@ -65,16 +65,17 @@ const meta = {
     },
     onRightClick: {
       action: 'onRightClick',
-      description: 'Called with the PolygonItem and client (x, y) coordinates when a polygon is right-clicked',
+      description:
+        'Called with the PolygonItem and client (x, y) coordinates when a polygon is right-clicked',
       table: { category: 'Callbacks' },
     },
   },
   decorators: [
     (Story, context) => {
       const areas = context.args['areas'] as PolygonItem[];
-      const allPoints = areas.flatMap(a => a.paths.flat());
-      const lats = allPoints.map(p => p.lat);
-      const lngs = allPoints.map(p => p.lng);
+      const allPoints = areas.flatMap((a) => a.paths.flat());
+      const lats = allPoints.map((p) => p.lat);
+      const lngs = allPoints.map((p) => p.lng);
       const center = {
         lat: (Math.max(...lats) + Math.min(...lats)) / 2,
         lng: (Math.max(...lngs) + Math.min(...lngs)) / 2,
