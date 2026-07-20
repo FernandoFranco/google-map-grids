@@ -49,6 +49,14 @@ docs: add CONTRIBUTING.md
 
 Common types: `feat`, `fix`, `docs`, `refactor`, `chore`.
 
+## Releasing
+
+1. Make sure `main` has green CI and everything you want in the release is already merged.
+2. `yarn version patch` (or `minor`/`major`) — bumps `package.json` and creates a `vX.Y.Z` commit + tag locally.
+3. `git push && git push --tags`.
+4. On GitHub, go to **Releases → Draft a new release**, pick the `vX.Y.Z` tag, write release notes, and publish it.
+5. The "Publish to npm" workflow runs automatically, waits for approval in the `npm-publish` environment, then publishes via OIDC trusted publishing — no npm token is ever stored in GitHub.
+
 ## Reporting bugs / requesting features
 
 Please open a [GitHub Issue](https://github.com/FernandoFranco/google-map-grids/issues) — include a minimal reproduction (a Storybook story is ideal) for bugs.
