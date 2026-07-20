@@ -23,6 +23,8 @@ jobs:
 
       - run: yarn install --immutable
 
+      - run: yarn playwright install --with-deps chromium
+
       - run: yarn lint
 
       - run: yarn test
