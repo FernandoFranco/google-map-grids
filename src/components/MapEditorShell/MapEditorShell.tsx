@@ -2,8 +2,6 @@ import {
   type PropsWithChildren,
   useState,
   useCallback,
-  useRef,
-  useReducer,
   useMemo,
   Fragment,
   type ReactNode,
@@ -27,8 +25,7 @@ interface RegisteredTool {
 
 export function MapEditorShell(props: PropsWithChildren<MapEditorShellProps>) {
   const [activeEditorKey, setActiveEditorKey] = useState<string | null>(null);
-  const toolsRef = useRef(new Map<string, RegisteredTool>());
-  const [, forceUpdate] = useReducer((n: number) => n + 1, 0);
+  const [tools, setTools] = useState(new Map<string, RegisteredTool>());
 
   const activateEditor = useCallback((key: string) => {
     setActiveEditorKey(key);
@@ -39,13 +36,15 @@ export function MapEditorShell(props: PropsWithChildren<MapEditorShellProps>) {
   }, []);
 
   const registerTool = useCallback((key: string, button: ReactNode, controls: ReactNode) => {
-    toolsRef.current.set(key, { button, controls });
-    forceUpdate();
+    setTools((prev) => new Map(prev).set(key, { button, controls }));
   }, []);
 
   const unregisterTool = useCallback((key: string) => {
-    toolsRef.current.delete(key);
-    forceUpdate();
+    setTools((prev) => {
+      const next = new Map(prev);
+      next.delete(key);
+      return next;
+    });
   }, []);
 
   const editorContextValue: EditorContextValue = useMemo(
@@ -80,10 +79,10 @@ export function MapEditorShell(props: PropsWithChildren<MapEditorShellProps>) {
 
   const sidebarContent =
     activeEditorKey === null
-      ? Array.from(toolsRef.current.entries()).map(([key, tool]) => (
+      ? Array.from(tools.entries()).map(([key, tool]) => (
           <Fragment key={key}>{tool.button}</Fragment>
         ))
-      : (toolsRef.current.get(activeEditorKey)?.controls ?? null);
+      : (tools.get(activeEditorKey)?.controls ?? null);
 
   return (
     <EditorContext.Provider value={editorContextValue}>

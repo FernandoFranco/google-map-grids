@@ -1,17 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { importLibrary } from '@googlemaps/js-api-loader';
 
 export function useMarker(
   map: google.maps.Map,
   options: google.maps.marker.AdvancedMarkerElementOptions,
+  visible = true,
 ): google.maps.marker.AdvancedMarkerElement | null {
   const [marker, setMarker] = useState<google.maps.marker.AdvancedMarkerElement | null>(null);
-  const optionsRef = useRef(options);
-
-  useEffect(() => {
-    optionsRef.current = options;
-  });
+  const { position, content, title, gmpDraggable } = options;
 
   useEffect(() => {
     let disposed = false;
@@ -23,7 +20,13 @@ export function useMarker(
       )) as google.maps.MarkerLibrary;
       if (disposed) return;
 
-      created = new AdvancedMarkerElement({ map, ...optionsRef.current });
+      created = new AdvancedMarkerElement({
+        map: visible ? map : null,
+        position,
+        content,
+        title,
+        gmpDraggable,
+      });
       setMarker(created);
     })();
 
@@ -31,30 +34,10 @@ export function useMarker(
       disposed = true;
       if (created) {
         created.map = null;
-        setMarker(null);
       }
+      setMarker(null);
     };
-  }, [map]);
-
-  useEffect(() => {
-    if (!marker) return;
-    if (options.position !== undefined) marker.position = options.position;
-  }, [marker, options.position]);
-
-  useEffect(() => {
-    if (!marker) return;
-    if (options.content !== undefined) marker.content = options.content as Node | null | undefined;
-  }, [marker, options.content]);
-
-  useEffect(() => {
-    if (!marker) return;
-    if (options.title !== undefined) marker.title = options.title ?? '';
-  }, [marker, options.title]);
-
-  useEffect(() => {
-    if (!marker) return;
-    if (options.gmpDraggable !== undefined) marker.gmpDraggable = options.gmpDraggable;
-  }, [marker, options.gmpDraggable]);
+  }, [map, visible, position, content, title, gmpDraggable]);
 
   return marker;
 }

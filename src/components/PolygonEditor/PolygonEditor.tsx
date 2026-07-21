@@ -34,18 +34,26 @@ export function PolygonEditor(props: PolygonEditorProps) {
   });
 
   const [pendingMetadata, setPendingMetadata] = useState<Partial<PolygonMetadata>>({});
-  const lockedAreaRef = useRef<PolygonData | null>(null);
+  const [lockedArea, setLockedArea] = useState<PolygonData | null>(null);
+
+  const editTarget = props.editingArea && !isActive ? props.editingArea : null;
+  const [trackedEditTarget, setTrackedEditTarget] = useState(editTarget);
+  if (editTarget !== trackedEditTarget) {
+    setTrackedEditTarget(editTarget);
+    if (editTarget) {
+      setLockedArea(editTarget);
+      setPendingMetadata({});
+    }
+  }
 
   useEffect(() => {
     if (props.editingArea && !isActive) {
-      lockedAreaRef.current = props.editingArea;
-      setPendingMetadata({});
       activateEditor(TOOL_KEY);
     }
   }, [props.editingArea, isActive, activateEditor]);
 
   const handleProperties = () => {
-    const editingArea = lockedAreaRef.current;
+    const editingArea = lockedArea;
     propsRef.current.onMetadataRequest({
       mode: editingArea ? 'edit' : 'create',
       current: editingArea ? { ...editingArea, ...pendingMetadata } : { ...pendingMetadata },
@@ -60,7 +68,7 @@ export function PolygonEditor(props: PolygonEditorProps) {
     lineStyle: props.lineStyle,
     initialNodes: props.editingArea?.paths[0],
     onShapeComplete: (nodes) => {
-      const editingArea = lockedAreaRef.current;
+      const editingArea = lockedArea;
       if (editingArea) {
         propsRef.current.onUpdate({ ...editingArea, ...pendingMetadata, paths: [nodes] });
         propsRef.current.onEditEnd?.();
@@ -72,12 +80,12 @@ export function PolygonEditor(props: PolygonEditorProps) {
         });
       }
       setPendingMetadata({});
-      lockedAreaRef.current = null;
+      setLockedArea(null);
     },
     onCancel: () => {
       setPendingMetadata({});
-      const editingArea = lockedAreaRef.current;
-      lockedAreaRef.current = null;
+      const editingArea = lockedArea;
+      setLockedArea(null);
       if (editingArea) {
         propsRef.current.onEditEnd?.();
       } else {
