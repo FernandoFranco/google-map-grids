@@ -9,12 +9,16 @@ permissions:
   contents: read
 
 jobs:
-  ci:
+  build-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        react-version: [19, 18]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: yarn
@@ -23,12 +27,28 @@ jobs:
 
       - run: yarn install --immutable
 
+      - name: Downgrade to React 18 for this matrix leg
+        if: matrix.react-version == 18
+        run: yarn add -D react@^18.3.1 react-dom@^18.3.1 @types/react@^18.3.23 @types/react-dom@^18.3.7
+
       - run: yarn playwright install --with-deps chromium
 
-      - run: yarn lint
+      - name: Lint
+        if: matrix.react-version == 19
+        run: yarn lint
 
       - run: yarn test
 
-      - run: yarn format:check
+      - name: Format check
+        if: matrix.react-version == 19
+        run: yarn format:check
 
       - run: yarn build
+
+  ci:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Require matrix success
+        run: '[ "${{ needs.build-and-test.result }}" = "success" ]'
