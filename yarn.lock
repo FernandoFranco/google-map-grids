@@ -5094,7 +5094,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:^7.5.4":
+"tar@npm:7.5.20":
   version: 7.5.20
   resolution: "tar@npm:7.5.20"
   dependencies:
