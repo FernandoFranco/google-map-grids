@@ -33,17 +33,26 @@ export function MarkerEditor(props: MarkerEditorProps) {
   const [pendingPosition, setPendingPosition] = useState<google.maps.LatLngLiteral | null>(null);
   const [pendingMetadata, setPendingMetadata] = useState<Partial<MarkerMetadata>>({});
 
+  const [trackedEditingMarker, setTrackedEditingMarker] = useState(props.editingMarker);
+  if (props.editingMarker !== trackedEditingMarker) {
+    setTrackedEditingMarker(props.editingMarker);
+    if (props.editingMarker) {
+      setPendingPosition(null);
+      setPendingMetadata({});
+    }
+  }
+
   const handleCreationCancel = () => {
     setPendingPosition(null);
     setPendingMetadata({});
     deactivateEditor();
-    propsRef.current.onCancel?.();
+    props.onCancel?.();
   };
 
   const handleEditDone = () => {
-    const { editingMarker } = propsRef.current;
+    const { editingMarker } = props;
     if (!editingMarker) return;
-    propsRef.current.onUpdate({
+    props.onUpdate({
       ...editingMarker,
       ...pendingMetadata,
       position: pendingPosition ?? editingMarker.position,
@@ -51,20 +60,20 @@ export function MarkerEditor(props: MarkerEditorProps) {
     setPendingPosition(null);
     setPendingMetadata({});
     deactivateEditor();
-    propsRef.current.onEditEnd?.();
+    props.onEditEnd?.();
   };
 
   const handleEditCancel = () => {
     setPendingPosition(null);
     setPendingMetadata({});
     deactivateEditor();
-    propsRef.current.onEditEnd?.();
+    props.onEditEnd?.();
   };
 
   const handleProperties = () => {
-    const { editingMarker } = propsRef.current;
+    const { editingMarker } = props;
     if (!editingMarker) return;
-    propsRef.current.onMetadataRequest({
+    props.onMetadataRequest({
       mode: 'edit',
       current: { ...editingMarker, ...pendingMetadata },
       onConfirm: (metadata) => setPendingMetadata(metadata),
@@ -73,13 +82,13 @@ export function MarkerEditor(props: MarkerEditorProps) {
   };
 
   const handleDelete = () => {
-    const { editingMarker } = propsRef.current;
+    const { editingMarker } = props;
     if (!editingMarker) return;
-    propsRef.current.onDelete(editingMarker);
+    props.onDelete(editingMarker);
     setPendingPosition(null);
     setPendingMetadata({});
     deactivateEditor();
-    propsRef.current.onEditEnd?.();
+    props.onEditEnd?.();
   };
 
   const isEditing = Boolean(props.editingMarker);
@@ -112,8 +121,6 @@ export function MarkerEditor(props: MarkerEditorProps) {
 
   useEffect(() => {
     if (props.editingMarker) {
-      setPendingPosition(null);
-      setPendingMetadata({});
       activateEditor(TOOL_KEY);
     }
   }, [props.editingMarker, activateEditor]);
@@ -163,6 +170,7 @@ export function MarkerEditor(props: MarkerEditorProps) {
     showMarker
       ? { position: markerPosition ?? undefined, gmpDraggable: isEditing && dragEnabled }
       : { position: undefined },
+    showMarker,
   );
 
   useEffect(() => {
@@ -182,11 +190,6 @@ export function MarkerEditor(props: MarkerEditorProps) {
       google.maps.event.removeListener(listener);
     };
   }, [markerInstance, isEditing]);
-
-  useEffect(() => {
-    if (!markerInstance) return;
-    markerInstance.map = showMarker ? map : null;
-  }, [markerInstance, showMarker, map]);
 
   return null;
 }

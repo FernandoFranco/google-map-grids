@@ -12,13 +12,13 @@ export interface GoogleMapsProviderProps {
 
 export function GoogleMapsProvider(props: PropsWithChildren<GoogleMapsProviderProps>) {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [loadError, setLoadError] = useState<Error | null>(null);
+  const [asyncLoadError, setAsyncLoadError] = useState<Error | null>(null);
+  const loadError = props.apiKey
+    ? asyncLoadError
+    : new Error('GoogleMapsProvider: apiKey is required');
 
   useEffect(() => {
-    if (!props.apiKey) {
-      setLoadError(new Error('GoogleMapsProvider: apiKey is required'));
-      return;
-    }
+    if (!props.apiKey) return;
 
     setOptions({
       key: props.apiKey,
@@ -30,8 +30,8 @@ export function GoogleMapsProvider(props: PropsWithChildren<GoogleMapsProviderPr
 
     importLibrary('core')
       .then(() => setIsLoaded(true))
-      .catch((err: Error) => setLoadError(err));
-  }, [props.apiKey, props.version, props.language, props.region]); // eslint-disable-line react-hooks/exhaustive-deps
+      .catch((err: Error) => setAsyncLoadError(err));
+  }, [props.apiKey, props.version, props.language, props.region, props.libraries]);
 
   return (
     <GoogleMapsContext.Provider value={{ isLoaded, loadError }}>

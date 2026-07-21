@@ -56,13 +56,13 @@ export function useDrawingEditorCore(options: UseDrawingEditorCoreOptions): {
   }, [isActive, clear]);
 
   const handleCancel = () => {
-    optionsRef.current.onCancel?.();
+    options.onCancel?.();
     deactivateEditor();
     clear();
   };
 
   const handleFinalize = () => {
-    optionsRef.current.onShapeComplete(nodes);
+    options.onShapeComplete(nodes);
     deactivateEditor();
     clear();
   };
