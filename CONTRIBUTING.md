@@ -60,8 +60,8 @@ Common types: `feat`, `fix`, `docs`, `refactor`, `chore`.
    git tag vX.Y.Z
    git push && git push --tags
    ```
-4. On GitHub, go to **Releases → Draft a new release**, pick the `vX.Y.Z` tag, write release notes, and publish it.
-5. The "Publish to npm" workflow runs automatically, waits for approval in the `npm-publish` environment, then publishes via OIDC trusted publishing — no npm token is ever stored in GitHub.
+4. Pushing the tag by itself does **not** publish anything — `publish.yml` only triggers on the `release: published` GitHub event, not on a tag push. You have to explicitly create the Release: on GitHub, go to **Releases → Draft a new release**, pick the `vX.Y.Z` tag, write release notes, and click **Publish release** (saving it as a draft does not trigger the workflow either — only clicking Publish does).
+5. Once published, the "Publish to npm" workflow runs automatically, waits for approval in the `npm-publish` environment, then publishes via OIDC trusted publishing — no npm token is ever stored in GitHub. Check `gh run list --workflow=publish.yml` (or the Actions tab) if you don't see it start.
 
 ## Reporting bugs / requesting features
 
