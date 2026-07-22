@@ -1,4 +1,4 @@
-import type { EditorButtonState, MetadataRequest } from '../MapEditorShell/EditorContext';
+import type { EditorButtonState, MetadataRequest } from '../EditorProvider/EditorContext';
 import type { LineStyle, NodeStyle } from '../../hooks/useDrawingEditorCore';
 
 import type { ReactNode } from 'react';

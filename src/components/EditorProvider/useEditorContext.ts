@@ -6,7 +6,7 @@ export function useEditorContext(): EditorContextValue {
   const context = useContext(EditorContext);
 
   if (!context) {
-    throw new Error('useEditorTool must be used within a MapEditorShell');
+    throw new Error('useEditorContext must be used within an EditorProvider');
   }
 
   return context;

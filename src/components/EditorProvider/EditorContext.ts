@@ -12,6 +12,11 @@ export interface MetadataRequest<T> {
   onCancel: () => void;
 }
 
+export interface RegisteredEditorTool {
+  button: ReactNode;
+  controls: ReactNode;
+}
+
 export interface EditorContextValue {
   activeEditorKey: string | null;
   activateEditor: (key: string) => void;
@@ -21,3 +26,7 @@ export interface EditorContextValue {
 }
 
 export const EditorContext = createContext<EditorContextValue | null>(null);
+
+export const EditorToolsContext = createContext<ReadonlyMap<string, RegisteredEditorTool> | null>(
+  null,
+);

@@ -6,12 +6,19 @@ export { GoogleMap } from './components/GoogleMap/GoogleMap';
 export type { GoogleMapProps } from './components/GoogleMap/GoogleMap';
 export { useMap, useMapId } from './components/GoogleMap/MapContext';
 
-export { MapEditorShell } from './components/MapEditorShell/MapEditorShell';
+export { EditorProvider } from './components/EditorProvider/EditorProvider';
+export { useEditorContext } from './components/EditorProvider/useEditorContext';
+export { useEditorTool } from './components/EditorProvider/useEditorTool';
+export type { UseEditorToolOptions } from './components/EditorProvider/useEditorTool';
+export { useEditorTools } from './components/EditorProvider/useEditorTools';
 export type {
-  MapEditorShellProps,
   EditorButtonState,
   MetadataRequest,
-} from './components/MapEditorShell/MapEditorShell';
+  RegisteredEditorTool,
+} from './components/EditorProvider/EditorContext';
+
+export { MapControl } from './components/MapControl/MapControl';
+export type { MapControlProps, MapControlPosition } from './components/MapControl/MapControl';
 
 export { MapRestriction } from './components/MapRestriction/MapRestriction';
 export type { MapRestrictionProps } from './components/MapRestriction/MapRestriction';

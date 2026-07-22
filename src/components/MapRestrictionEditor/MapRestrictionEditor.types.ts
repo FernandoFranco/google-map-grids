@@ -3,7 +3,7 @@ import type {
   LineStyle,
   NodeStyle,
 } from '../../hooks/useDrawingEditorCore';
-import type { EditorButtonState } from '../MapEditorShell/EditorContext';
+import type { EditorButtonState } from '../EditorProvider/EditorContext';
 import type { ReactNode } from 'react';
 
 export type { DrawingEditorControlsState, LineStyle, NodeStyle };

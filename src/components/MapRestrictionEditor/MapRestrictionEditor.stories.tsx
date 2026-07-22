@@ -1,15 +1,35 @@
-import { useState } from 'react';
+import { Fragment, type PropsWithChildren, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { GoogleMap } from '../GoogleMap/GoogleMap';
 import { GoogleMapsProvider } from '../GoogleMapsProvider/GoogleMapsProvider';
-import { MapEditorShell, type EditorButtonState } from '../MapEditorShell/MapEditorShell';
+import { EditorProvider } from '../EditorProvider/EditorProvider';
+import { useEditorContext } from '../EditorProvider/useEditorContext';
+import { useEditorTools } from '../EditorProvider/useEditorTools';
+import type { EditorButtonState } from '../EditorProvider/EditorContext';
 import { MapRestriction } from '../MapRestriction/MapRestriction';
 import {
   MapRestrictionEditor,
   type DrawingEditorControlsState,
   type MapRestrictionEditorProps,
 } from './MapRestrictionEditor';
+
+function EditorSidebarLayout(props: PropsWithChildren) {
+  const { activeEditorKey } = useEditorContext();
+  const tools = useEditorTools();
+
+  const sidebarContent =
+    activeEditorKey === null
+      ? Array.from(tools.values()).map((tool, i) => <Fragment key={i}>{tool.button}</Fragment>)
+      : (tools.get(activeEditorKey)?.controls ?? null);
+
+  return (
+    <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ width: 260, overflowY: 'auto' }}>{sidebarContent}</div>
+      <div style={{ flex: 1 }}>{props.children}</div>
+    </div>
+  );
+}
 
 type MapRestrictionEditorStoryArgs = MapRestrictionEditorProps & { apiKey: string };
 
@@ -159,17 +179,19 @@ function DefaultDemo(args: MapRestrictionEditorStoryArgs) {
     <>
       <style>{DEMO_STYLES}</style>
       <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
-        <MapEditorShell>
-          <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
-            {restriction && <MapRestriction polygon={restriction} padded={isEditing} />}
-            <MapRestrictionEditor
-              renderButton={(state) => renderRestrictionButton(state, setIsEditing)}
-              renderControls={(state) => renderRestrictionControls(state, setIsEditing)}
-              onComplete={(polygon) => setRestriction(polygon)}
-              onCancel={() => console.log('onCancel')}
-            />
-          </GoogleMap>
-        </MapEditorShell>
+        <EditorProvider>
+          <EditorSidebarLayout>
+            <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
+              {restriction && <MapRestriction polygon={restriction} padded={isEditing} />}
+              <MapRestrictionEditor
+                renderButton={(state) => renderRestrictionButton(state, setIsEditing)}
+                renderControls={(state) => renderRestrictionControls(state, setIsEditing)}
+                onComplete={(polygon) => setRestriction(polygon)}
+                onCancel={() => console.log('onCancel')}
+              />
+            </GoogleMap>
+          </EditorSidebarLayout>
+        </EditorProvider>
       </GoogleMapsProvider>
     </>
   );
@@ -183,18 +205,20 @@ function EditExistingDemo(args: MapRestrictionEditorStoryArgs) {
     <>
       <style>{DEMO_STYLES}</style>
       <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
-        <MapEditorShell>
-          <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
-            <MapRestriction polygon={restriction} padded={isEditing} />
-            <MapRestrictionEditor
-              currentRestriction={restriction}
-              renderButton={(state) => renderRestrictionButton(state, setIsEditing)}
-              renderControls={(state) => renderRestrictionControls(state, setIsEditing)}
-              onComplete={(polygon) => setRestriction(polygon)}
-              onCancel={() => console.log('onCancel')}
-            />
-          </GoogleMap>
-        </MapEditorShell>
+        <EditorProvider>
+          <EditorSidebarLayout>
+            <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
+              <MapRestriction polygon={restriction} padded={isEditing} />
+              <MapRestrictionEditor
+                currentRestriction={restriction}
+                renderButton={(state) => renderRestrictionButton(state, setIsEditing)}
+                renderControls={(state) => renderRestrictionControls(state, setIsEditing)}
+                onComplete={(polygon) => setRestriction(polygon)}
+                onCancel={() => console.log('onCancel')}
+              />
+            </GoogleMap>
+          </EditorSidebarLayout>
+        </EditorProvider>
       </GoogleMapsProvider>
     </>
   );
@@ -213,23 +237,25 @@ function PlaygroundDemo(args: MapRestrictionEditorStoryArgs) {
         Reset restriction
       </button>
       <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
-        <MapEditorShell>
-          <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
-            {restriction && <MapRestriction polygon={restriction} padded={isEditing} />}
-            <MapRestrictionEditor
-              currentRestriction={restriction}
-              nodeStyle={{ fillColor: '#e37400', strokeColor: '#fff', closeFillColor: '#a52714' }}
-              lineStyle={{ strokeColor: '#e37400', strokeWeight: 3 }}
-              renderButton={(state) => renderRestrictionButton(state, setIsEditing)}
-              renderControls={(state) => renderRestrictionControls(state, setIsEditing)}
-              onComplete={(polygon) => {
-                setRestriction(polygon);
-                args.onComplete(polygon);
-              }}
-              onCancel={args.onCancel}
-            />
-          </GoogleMap>
-        </MapEditorShell>
+        <EditorProvider>
+          <EditorSidebarLayout>
+            <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
+              {restriction && <MapRestriction polygon={restriction} padded={isEditing} />}
+              <MapRestrictionEditor
+                currentRestriction={restriction}
+                nodeStyle={{ fillColor: '#e37400', strokeColor: '#fff', closeFillColor: '#a52714' }}
+                lineStyle={{ strokeColor: '#e37400', strokeWeight: 3 }}
+                renderButton={(state) => renderRestrictionButton(state, setIsEditing)}
+                renderControls={(state) => renderRestrictionControls(state, setIsEditing)}
+                onComplete={(polygon) => {
+                  setRestriction(polygon);
+                  args.onComplete(polygon);
+                }}
+                onCancel={args.onCancel}
+              />
+            </GoogleMap>
+          </EditorSidebarLayout>
+        </EditorProvider>
       </GoogleMapsProvider>
     </>
   );
@@ -281,13 +307,33 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const DEFAULT_EXAMPLE_CODE = `function MapRestrictionEditorDemo() {
+const EDITOR_SIDEBAR_LAYOUT_SNIPPET = `function EditorSidebarLayout({ children }) {
+  const { activeEditorKey } = useEditorContext();
+  const tools = useEditorTools();
+
+  const sidebarContent =
+    activeEditorKey === null
+      ? Array.from(tools.values()).map((tool, i) => <Fragment key={i}>{tool.button}</Fragment>)
+      : (tools.get(activeEditorKey)?.controls ?? null);
+
+  return (
+    <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ width: 260, overflowY: 'auto' }}>{sidebarContent}</div>
+      <div style={{ flex: 1 }}>{children}</div>
+    </div>
+  );
+}
+
+`;
+
+const DEFAULT_EXAMPLE_CODE = `${EDITOR_SIDEBAR_LAYOUT_SNIPPET}function MapRestrictionEditorDemo() {
   const [restriction, setRestriction] = useState<google.maps.LatLngLiteral[] | null>(null);
 
   return (
     <GoogleMapsProvider apiKey={apiKey}>
-      <MapEditorShell>
-        <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={13} mapId="YOUR_MAP_ID">
+      <EditorProvider>
+        <EditorSidebarLayout>
+          <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={13} mapId="YOUR_MAP_ID">
           {restriction && <MapRestriction polygon={restriction} />}
           <MapRestrictionEditor
             renderButton={(state) => <button onClick={state.activate}>Restrição de Área</button>}
@@ -305,12 +351,13 @@ const DEFAULT_EXAMPLE_CODE = `function MapRestrictionEditorDemo() {
             onCancel={() => console.log('cancelled')}
           />
         </GoogleMap>
-      </MapEditorShell>
+        </EditorSidebarLayout>
+      </EditorProvider>
     </GoogleMapsProvider>
   );
 }`;
 
-const EDIT_EXISTING_EXAMPLE_CODE = `function MapRestrictionEditorDemo() {
+const EDIT_EXISTING_EXAMPLE_CODE = `${EDITOR_SIDEBAR_LAYOUT_SNIPPET}function MapRestrictionEditorDemo() {
   const [restriction, setRestriction] = useState<google.maps.LatLngLiteral[]>(existingRestriction);
   // "padded" only matters while actively dragging nodes — MapRestriction's pan-lock is
   // otherwise flush with the polygon, so nodes sitting on that boundary become unreachable.
@@ -318,8 +365,9 @@ const EDIT_EXISTING_EXAMPLE_CODE = `function MapRestrictionEditorDemo() {
 
   return (
     <GoogleMapsProvider apiKey={apiKey}>
-      <MapEditorShell>
-        <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={13} mapId="YOUR_MAP_ID">
+      <EditorProvider>
+        <EditorSidebarLayout>
+          <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={13} mapId="YOUR_MAP_ID">
           <MapRestriction polygon={restriction} padded={isEditing} />
           <MapRestrictionEditor
             currentRestriction={restriction}
@@ -347,19 +395,21 @@ const EDIT_EXISTING_EXAMPLE_CODE = `function MapRestrictionEditorDemo() {
             onCancel={() => console.log('cancelled')}
           />
         </GoogleMap>
-      </MapEditorShell>
+        </EditorSidebarLayout>
+      </EditorProvider>
     </GoogleMapsProvider>
   );
 }`;
 
-const PLAYGROUND_EXAMPLE_CODE = `function MapRestrictionEditorDemo() {
+const PLAYGROUND_EXAMPLE_CODE = `${EDITOR_SIDEBAR_LAYOUT_SNIPPET}function MapRestrictionEditorDemo() {
   const [restriction, setRestriction] = useState<google.maps.LatLngLiteral[] | null>(existingRestriction);
   const [isEditing, setIsEditing] = useState(false);
 
   return (
     <GoogleMapsProvider apiKey={apiKey}>
-      <MapEditorShell>
-        <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={13} mapId="YOUR_MAP_ID">
+      <EditorProvider>
+        <EditorSidebarLayout>
+          <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={13} mapId="YOUR_MAP_ID">
           {restriction && <MapRestriction polygon={restriction} padded={isEditing} />}
           <MapRestrictionEditor
             currentRestriction={restriction}
@@ -389,7 +439,8 @@ const PLAYGROUND_EXAMPLE_CODE = `function MapRestrictionEditorDemo() {
             onCancel={() => console.log('cancelled')}
           />
         </GoogleMap>
-      </MapEditorShell>
+        </EditorSidebarLayout>
+      </EditorProvider>
     </GoogleMapsProvider>
   );
 }`;
