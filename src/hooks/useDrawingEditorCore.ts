@@ -1,8 +1,8 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 
-import type { EditorButtonState } from '../components/MapEditorShell/EditorContext';
-import { useEditorContext } from '../components/MapEditorShell/useEditorContext';
-import { useEditorTool } from '../components/MapEditorShell/useEditorTool';
+import type { EditorButtonState } from '../components/EditorProvider/EditorContext';
+import { useEditorContext } from '../components/EditorProvider/useEditorContext';
+import { useEditorTool } from '../components/EditorProvider/useEditorTool';
 import { useMap } from '../components/GoogleMap/MapContext';
 import { useNodeLineEditor, type LineStyle, type NodeStyle } from './useNodeLineEditor';
 

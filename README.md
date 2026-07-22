@@ -15,7 +15,7 @@ Every feature ships as a matched pair: a **render** component that just displays
 - **`MarkerLayer` / `MarkerEditor`** — display markers; create, drag, and delete them interactively.
 - **`PolygonLayer` / `PolygonEditor`** — display polygons; draw and edit their shape and metadata.
 - **`MapRestriction` / `MapRestrictionEditor`** — constrain the map to an area; draw or adjust that area interactively.
-- **`MapEditorShell`** — a sidebar shell that hosts one or more editors' toolbar buttons and controls side-by-side with the map.
+- **`EditorProvider`** — shares editor tool/activation state across any layout you compose yourself; `MapControl` places React content as a native Google Maps control (e.g. an editor's toolbar button rendered inside the map).
 
 ## Installation
 

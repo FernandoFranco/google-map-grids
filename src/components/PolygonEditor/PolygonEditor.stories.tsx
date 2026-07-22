@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { Fragment, type PropsWithChildren, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { GoogleMap } from '../GoogleMap/GoogleMap';
 import { GoogleMapsProvider } from '../GoogleMapsProvider/GoogleMapsProvider';
-import { MapEditorShell, type EditorButtonState } from '../MapEditorShell/MapEditorShell';
+import { EditorProvider } from '../EditorProvider/EditorProvider';
+import { useEditorContext } from '../EditorProvider/useEditorContext';
+import { useEditorTools } from '../EditorProvider/useEditorTools';
+import type { EditorButtonState } from '../EditorProvider/EditorContext';
 import { PolygonLayer, type PolygonItem } from '../PolygonLayer/PolygonLayer';
 import {
   PolygonEditor,
@@ -11,6 +14,23 @@ import {
   type PolygonEditorControlsState,
   type PolygonEditorProps,
 } from './PolygonEditor';
+
+function EditorSidebarLayout(props: PropsWithChildren) {
+  const { activeEditorKey } = useEditorContext();
+  const tools = useEditorTools();
+
+  const sidebarContent =
+    activeEditorKey === null
+      ? Array.from(tools.values()).map((tool, i) => <Fragment key={i}>{tool.button}</Fragment>)
+      : (tools.get(activeEditorKey)?.controls ?? null);
+
+  return (
+    <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ width: 260, overflowY: 'auto' }}>{sidebarContent}</div>
+      <div style={{ flex: 1 }}>{props.children}</div>
+    </div>
+  );
+}
 
 type PolygonEditorStoryArgs = PolygonEditorProps & { apiKey: string };
 
@@ -172,28 +192,30 @@ function DefaultDemo(args: PolygonEditorStoryArgs) {
     <>
       <style>{DEMO_STYLES}</style>
       <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
-        <MapEditorShell>
-          <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
-            <PolygonLayer areas={areas.map(toPolygonItem)} />
-            <PolygonEditor
-              renderButton={renderPolygonButton}
-              renderControls={renderPolygonControls}
-              onMetadataRequest={(req) => {
-                const title = window.prompt('Título da área:', req.current.title ?? '') ?? '';
-                if (!title) {
-                  req.onCancel();
-                  return;
+        <EditorProvider>
+          <EditorSidebarLayout>
+            <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
+              <PolygonLayer areas={areas.map(toPolygonItem)} />
+              <PolygonEditor
+                renderButton={renderPolygonButton}
+                renderControls={renderPolygonControls}
+                onMetadataRequest={(req) => {
+                  const title = window.prompt('Título da área:', req.current.title ?? '') ?? '';
+                  if (!title) {
+                    req.onCancel();
+                    return;
+                  }
+                  req.onConfirm({ title, color: req.current.color ?? '#1a73e8' });
+                }}
+                onAdd={(area) => setAreas((prev) => [...prev, area])}
+                onUpdate={(area) =>
+                  setAreas((prev) => prev.map((a) => (a.id === area.id ? area : a)))
                 }
-                req.onConfirm({ title, color: req.current.color ?? '#1a73e8' });
-              }}
-              onAdd={(area) => setAreas((prev) => [...prev, area])}
-              onUpdate={(area) =>
-                setAreas((prev) => prev.map((a) => (a.id === area.id ? area : a)))
-              }
-              onCancel={() => console.log('onCancel')}
-            />
-          </GoogleMap>
-        </MapEditorShell>
+                onCancel={() => console.log('onCancel')}
+              />
+            </GoogleMap>
+          </EditorSidebarLayout>
+        </EditorProvider>
       </GoogleMapsProvider>
     </>
   );
@@ -208,35 +230,37 @@ function EditExistingDemo(args: PolygonEditorStoryArgs) {
     <>
       <style>{DEMO_STYLES}</style>
       <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
-        <MapEditorShell>
-          <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
-            <PolygonLayer
-              areas={areas.filter((a) => a.id !== editingArea?.id).map(toPolygonItem)}
-              interactive={!isEditorActive}
-              onClick={(item) => setEditingArea(areas.find((a) => a.id === item.id) ?? null)}
-            />
-            <PolygonEditor
-              renderButton={() => null}
-              renderControls={renderPolygonControls}
-              editingArea={editingArea}
-              onActiveChange={setIsEditorActive}
-              onMetadataRequest={(req) => {
-                const title = window.prompt('Título da área:', req.current.title ?? '') ?? '';
-                if (!title) {
-                  req.onCancel();
-                  return;
+        <EditorProvider>
+          <EditorSidebarLayout>
+            <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
+              <PolygonLayer
+                areas={areas.filter((a) => a.id !== editingArea?.id).map(toPolygonItem)}
+                interactive={!isEditorActive}
+                onClick={(item) => setEditingArea(areas.find((a) => a.id === item.id) ?? null)}
+              />
+              <PolygonEditor
+                renderButton={() => null}
+                renderControls={renderPolygonControls}
+                editingArea={editingArea}
+                onActiveChange={setIsEditorActive}
+                onMetadataRequest={(req) => {
+                  const title = window.prompt('Título da área:', req.current.title ?? '') ?? '';
+                  if (!title) {
+                    req.onCancel();
+                    return;
+                  }
+                  req.onConfirm({ title, color: req.current.color ?? '#1a73e8' });
+                }}
+                onAdd={(area) => setAreas((prev) => [...prev, area])}
+                onUpdate={(area) =>
+                  setAreas((prev) => prev.map((a) => (a.id === area.id ? area : a)))
                 }
-                req.onConfirm({ title, color: req.current.color ?? '#1a73e8' });
-              }}
-              onAdd={(area) => setAreas((prev) => [...prev, area])}
-              onUpdate={(area) =>
-                setAreas((prev) => prev.map((a) => (a.id === area.id ? area : a)))
-              }
-              onEditEnd={() => setEditingArea(null)}
-              onCancel={() => console.log('onCancel')}
-            />
-          </GoogleMap>
-        </MapEditorShell>
+                onEditEnd={() => setEditingArea(null)}
+                onCancel={() => console.log('onCancel')}
+              />
+            </GoogleMap>
+          </EditorSidebarLayout>
+        </EditorProvider>
       </GoogleMapsProvider>
     </>
   );
@@ -251,42 +275,44 @@ function PlaygroundDemo(args: PolygonEditorStoryArgs) {
     <>
       <style>{DEMO_STYLES}</style>
       <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
-        <MapEditorShell>
-          <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
-            <PolygonLayer
-              areas={areas.filter((a) => a.id !== editingArea?.id).map(toPolygonItem)}
-              interactive={!isEditorActive}
-              onClick={(item) => setEditingArea(areas.find((a) => a.id === item.id) ?? null)}
-            />
-            <PolygonEditor
-              renderButton={renderPolygonButton}
-              renderControls={renderPolygonControls}
-              editingArea={editingArea}
-              onActiveChange={setIsEditorActive}
-              onMetadataRequest={(req) => {
-                const title = window.prompt('Título:', req.current.title ?? '') ?? '';
-                if (!title) {
-                  req.onCancel();
-                  return;
-                }
-                req.onConfirm({ title, color: req.current.color ?? '#1a73e8' });
-              }}
-              onAdd={(area) => {
-                setAreas((prev) => [...prev, area]);
-                args.onAdd(area);
-              }}
-              onUpdate={(area) => {
-                setAreas((prev) => prev.map((a) => (a.id === area.id ? area : a)));
-                args.onUpdate(area);
-              }}
-              onEditEnd={() => {
-                setEditingArea(null);
-                args.onEditEnd?.();
-              }}
-              onCancel={args.onCancel}
-            />
-          </GoogleMap>
-        </MapEditorShell>
+        <EditorProvider>
+          <EditorSidebarLayout>
+            <GoogleMap center={SAO_PAULO} zoom={13} mapId="DEMO_MAP_ID" height={500}>
+              <PolygonLayer
+                areas={areas.filter((a) => a.id !== editingArea?.id).map(toPolygonItem)}
+                interactive={!isEditorActive}
+                onClick={(item) => setEditingArea(areas.find((a) => a.id === item.id) ?? null)}
+              />
+              <PolygonEditor
+                renderButton={renderPolygonButton}
+                renderControls={renderPolygonControls}
+                editingArea={editingArea}
+                onActiveChange={setIsEditorActive}
+                onMetadataRequest={(req) => {
+                  const title = window.prompt('Título:', req.current.title ?? '') ?? '';
+                  if (!title) {
+                    req.onCancel();
+                    return;
+                  }
+                  req.onConfirm({ title, color: req.current.color ?? '#1a73e8' });
+                }}
+                onAdd={(area) => {
+                  setAreas((prev) => [...prev, area]);
+                  args.onAdd(area);
+                }}
+                onUpdate={(area) => {
+                  setAreas((prev) => prev.map((a) => (a.id === area.id ? area : a)));
+                  args.onUpdate(area);
+                }}
+                onEditEnd={() => {
+                  setEditingArea(null);
+                  args.onEditEnd?.();
+                }}
+                onCancel={args.onCancel}
+              />
+            </GoogleMap>
+          </EditorSidebarLayout>
+        </EditorProvider>
       </GoogleMapsProvider>
     </>
   );
@@ -351,13 +377,33 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const CREATION_EXAMPLE_CODE = `function PolygonEditorDemo() {
+const EDITOR_SIDEBAR_LAYOUT_SNIPPET = `function EditorSidebarLayout({ children }) {
+  const { activeEditorKey } = useEditorContext();
+  const tools = useEditorTools();
+
+  const sidebarContent =
+    activeEditorKey === null
+      ? Array.from(tools.values()).map((tool, i) => <Fragment key={i}>{tool.button}</Fragment>)
+      : (tools.get(activeEditorKey)?.controls ?? null);
+
+  return (
+    <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ width: 260, overflowY: 'auto' }}>{sidebarContent}</div>
+      <div style={{ flex: 1 }}>{children}</div>
+    </div>
+  );
+}
+
+`;
+
+const CREATION_EXAMPLE_CODE = `${EDITOR_SIDEBAR_LAYOUT_SNIPPET}function PolygonEditorDemo() {
   const [areas, setAreas] = useState<PolygonData[]>([]);
 
   return (
     <GoogleMapsProvider apiKey={apiKey}>
-      <MapEditorShell>
-        <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={13} mapId="YOUR_MAP_ID">
+      <EditorProvider>
+        <EditorSidebarLayout>
+          <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={13} mapId="YOUR_MAP_ID">
           <PolygonLayer areas={areas.map((a) => ({ id: a.id, paths: a.paths, fillColor: a.color, strokeColor: a.color }))} />
           <PolygonEditor
             renderButton={(state) => <button onClick={state.activate}>Desenhar Área</button>}
@@ -386,12 +432,13 @@ const CREATION_EXAMPLE_CODE = `function PolygonEditorDemo() {
             }
           />
         </GoogleMap>
-      </MapEditorShell>
+        </EditorSidebarLayout>
+      </EditorProvider>
     </GoogleMapsProvider>
   );
 }`;
 
-const EDIT_EXISTING_EXAMPLE_CODE = `function PolygonEditorDemo() {
+const EDIT_EXISTING_EXAMPLE_CODE = `${EDITOR_SIDEBAR_LAYOUT_SNIPPET}function PolygonEditorDemo() {
   const [areas, setAreas] = useState<PolygonData[]>(existingAreas);
   const [editingArea, setEditingArea] = useState<PolygonData | null>(null);
   // Disables interaction with the other rendered polygons while a session is in
@@ -401,8 +448,9 @@ const EDIT_EXISTING_EXAMPLE_CODE = `function PolygonEditorDemo() {
 
   return (
     <GoogleMapsProvider apiKey={apiKey}>
-      <MapEditorShell>
-        <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={13} mapId="YOUR_MAP_ID">
+      <EditorProvider>
+        <EditorSidebarLayout>
+          <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={13} mapId="YOUR_MAP_ID">
           <PolygonLayer
             areas={areas
               .filter((a) => a.id !== editingArea?.id)
@@ -438,20 +486,22 @@ const EDIT_EXISTING_EXAMPLE_CODE = `function PolygonEditorDemo() {
             onEditEnd={() => setEditingArea(null)}
           />
         </GoogleMap>
-      </MapEditorShell>
+        </EditorSidebarLayout>
+      </EditorProvider>
     </GoogleMapsProvider>
   );
 }`;
 
-const PLAYGROUND_EXAMPLE_CODE = `function PolygonEditorDemo() {
+const PLAYGROUND_EXAMPLE_CODE = `${EDITOR_SIDEBAR_LAYOUT_SNIPPET}function PolygonEditorDemo() {
   const [areas, setAreas] = useState<PolygonData[]>(existingAreas);
   const [editingArea, setEditingArea] = useState<PolygonData | null>(null);
   const [isEditorActive, setIsEditorActive] = useState(false);
 
   return (
     <GoogleMapsProvider apiKey={apiKey}>
-      <MapEditorShell>
-        <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={13} mapId="YOUR_MAP_ID">
+      <EditorProvider>
+        <EditorSidebarLayout>
+          <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={13} mapId="YOUR_MAP_ID">
           <PolygonLayer
             areas={areas
               .filter((a) => a.id !== editingArea?.id)
@@ -490,7 +540,8 @@ const PLAYGROUND_EXAMPLE_CODE = `function PolygonEditorDemo() {
             onCancel={() => console.log('creation cancelled')}
           />
         </GoogleMap>
-      </MapEditorShell>
+        </EditorSidebarLayout>
+      </EditorProvider>
     </GoogleMapsProvider>
   );
 }`;

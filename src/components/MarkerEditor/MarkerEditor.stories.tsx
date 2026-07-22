@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { Fragment, type PropsWithChildren, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { GoogleMap } from '../GoogleMap/GoogleMap';
 import { GoogleMapsProvider } from '../GoogleMapsProvider/GoogleMapsProvider';
-import { MapEditorShell, type EditorButtonState } from '../MapEditorShell/MapEditorShell';
+import { EditorProvider } from '../EditorProvider/EditorProvider';
+import { useEditorContext } from '../EditorProvider/useEditorContext';
+import { useEditorTools } from '../EditorProvider/useEditorTools';
+import type { EditorButtonState } from '../EditorProvider/EditorContext';
 import {
   MarkerEditor,
   type MarkerData,
@@ -11,6 +14,23 @@ import {
   type MarkerEditorProps,
 } from './MarkerEditor';
 import { MarkerLayer } from '../MarkerLayer/MarkerLayer';
+
+function EditorSidebarLayout(props: PropsWithChildren) {
+  const { activeEditorKey } = useEditorContext();
+  const tools = useEditorTools();
+
+  const sidebarContent =
+    activeEditorKey === null
+      ? Array.from(tools.values()).map((tool, i) => <Fragment key={i}>{tool.button}</Fragment>)
+      : (tools.get(activeEditorKey)?.controls ?? null);
+
+  return (
+    <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ width: 260, overflowY: 'auto' }}>{sidebarContent}</div>
+      <div style={{ flex: 1 }}>{props.children}</div>
+    </div>
+  );
+}
 
 type MarkerEditorStoryArgs = MarkerEditorProps & { apiKey: string };
 
@@ -180,31 +200,33 @@ function CreationDemo(args: MarkerEditorStoryArgs) {
     <>
       <style>{DEMO_STYLES}</style>
       <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
-        <MapEditorShell>
-          <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={500}>
-            <MarkerLayer
-              items={markers.map((m) => ({ id: m.id, position: m.position, title: m.name }))}
-            />
-            <MarkerEditor
-              renderButton={renderMarkerButton}
-              renderControls={renderMarkerControls}
-              onMetadataRequest={(req) => {
-                const name = window.prompt('Nome do marcador:', '') ?? '';
-                if (!name) {
-                  req.onCancel();
-                  return;
+        <EditorProvider>
+          <EditorSidebarLayout>
+            <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={500}>
+              <MarkerLayer
+                items={markers.map((m) => ({ id: m.id, position: m.position, title: m.name }))}
+              />
+              <MarkerEditor
+                renderButton={renderMarkerButton}
+                renderControls={renderMarkerControls}
+                onMetadataRequest={(req) => {
+                  const name = window.prompt('Nome do marcador:', '') ?? '';
+                  if (!name) {
+                    req.onCancel();
+                    return;
+                  }
+                  req.onConfirm({ name, icon: 'default', color: '#1a73e8' });
+                }}
+                onAdd={(marker) => setMarkers((prev) => [...prev, marker])}
+                onUpdate={(marker) =>
+                  setMarkers((prev) => prev.map((m) => (m.id === marker.id ? marker : m)))
                 }
-                req.onConfirm({ name, icon: 'default', color: '#1a73e8' });
-              }}
-              onAdd={(marker) => setMarkers((prev) => [...prev, marker])}
-              onUpdate={(marker) =>
-                setMarkers((prev) => prev.map((m) => (m.id === marker.id ? marker : m)))
-              }
-              onDelete={(marker) => setMarkers((prev) => prev.filter((m) => m.id !== marker.id))}
-              onCancel={() => console.log('onCancel')}
-            />
-          </GoogleMap>
-        </MapEditorShell>
+                onDelete={(marker) => setMarkers((prev) => prev.filter((m) => m.id !== marker.id))}
+                onCancel={() => console.log('onCancel')}
+              />
+            </GoogleMap>
+          </EditorSidebarLayout>
+        </EditorProvider>
       </GoogleMapsProvider>
     </>
   );
@@ -218,40 +240,42 @@ function EditOnlyDemo(args: MarkerEditorStoryArgs) {
     <>
       <style>{DEMO_STYLES}</style>
       <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
-        <MapEditorShell>
-          <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={500}>
-            <MarkerLayer
-              items={markers
-                .filter((m) => m.id !== editingMarker?.id)
-                .map((m) => ({ id: m.id, position: m.position, title: m.name }))}
-              onClick={(item) => setEditingMarker(markers.find((m) => m.id === item.id) ?? null)}
-            />
-            <MarkerEditor
-              renderButton={() => null}
-              renderControls={renderMarkerControls}
-              editingMarker={editingMarker}
-              onMetadataRequest={(req) => {
-                const name = window.prompt('Nome do marcador:', req.current.name ?? '') ?? '';
-                if (!name) {
-                  req.onCancel();
-                  return;
+        <EditorProvider>
+          <EditorSidebarLayout>
+            <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={500}>
+              <MarkerLayer
+                items={markers
+                  .filter((m) => m.id !== editingMarker?.id)
+                  .map((m) => ({ id: m.id, position: m.position, title: m.name }))}
+                onClick={(item) => setEditingMarker(markers.find((m) => m.id === item.id) ?? null)}
+              />
+              <MarkerEditor
+                renderButton={() => null}
+                renderControls={renderMarkerControls}
+                editingMarker={editingMarker}
+                onMetadataRequest={(req) => {
+                  const name = window.prompt('Nome do marcador:', req.current.name ?? '') ?? '';
+                  if (!name) {
+                    req.onCancel();
+                    return;
+                  }
+                  req.onConfirm({
+                    name,
+                    icon: req.current.icon ?? 'default',
+                    color: req.current.color ?? '#1a73e8',
+                  });
+                }}
+                onAdd={(marker) => setMarkers((prev) => [...prev, marker])}
+                onUpdate={(marker) =>
+                  setMarkers((prev) => prev.map((m) => (m.id === marker.id ? marker : m)))
                 }
-                req.onConfirm({
-                  name,
-                  icon: req.current.icon ?? 'default',
-                  color: req.current.color ?? '#1a73e8',
-                });
-              }}
-              onAdd={(marker) => setMarkers((prev) => [...prev, marker])}
-              onUpdate={(marker) =>
-                setMarkers((prev) => prev.map((m) => (m.id === marker.id ? marker : m)))
-              }
-              onDelete={(marker) => setMarkers((prev) => prev.filter((m) => m.id !== marker.id))}
-              onEditEnd={() => setEditingMarker(null)}
-              onCancel={() => console.log('onCancel')}
-            />
-          </GoogleMap>
-        </MapEditorShell>
+                onDelete={(marker) => setMarkers((prev) => prev.filter((m) => m.id !== marker.id))}
+                onEditEnd={() => setEditingMarker(null)}
+                onCancel={() => console.log('onCancel')}
+              />
+            </GoogleMap>
+          </EditorSidebarLayout>
+        </EditorProvider>
       </GoogleMapsProvider>
     </>
   );
@@ -265,51 +289,53 @@ function PlaygroundDemo(args: MarkerEditorStoryArgs) {
     <>
       <style>{DEMO_STYLES}</style>
       <GoogleMapsProvider apiKey={args.apiKey?.trim() || defaultApiKey}>
-        <MapEditorShell>
-          <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={500}>
-            <MarkerLayer
-              items={markers
-                .filter((m) => m.id !== editingMarker?.id)
-                .map((m) => ({ id: m.id, position: m.position, title: m.name }))}
-              onClick={(item) => setEditingMarker(markers.find((m) => m.id === item.id) ?? null)}
-            />
-            <MarkerEditor
-              renderButton={renderMarkerButton}
-              renderControls={renderMarkerControls}
-              editingMarker={editingMarker}
-              dragEnabled={args.dragEnabled}
-              onMetadataRequest={(req) => {
-                const name = window.prompt('Nome:', req.current.name ?? '') ?? '';
-                if (!name) {
-                  req.onCancel();
-                  return;
-                }
-                req.onConfirm({
-                  name,
-                  icon: req.current.icon ?? 'default',
-                  color: req.current.color ?? '#1a73e8',
-                });
-              }}
-              onAdd={(marker) => {
-                setMarkers((prev) => [...prev, marker]);
-                args.onAdd(marker);
-              }}
-              onUpdate={(marker) => {
-                setMarkers((prev) => prev.map((m) => (m.id === marker.id ? marker : m)));
-                args.onUpdate(marker);
-              }}
-              onDelete={(marker) => {
-                setMarkers((prev) => prev.filter((m) => m.id !== marker.id));
-                args.onDelete(marker);
-              }}
-              onEditEnd={() => {
-                setEditingMarker(null);
-                args.onEditEnd?.();
-              }}
-              onCancel={args.onCancel}
-            />
-          </GoogleMap>
-        </MapEditorShell>
+        <EditorProvider>
+          <EditorSidebarLayout>
+            <GoogleMap center={SAO_PAULO} zoom={14} mapId="DEMO_MAP_ID" height={500}>
+              <MarkerLayer
+                items={markers
+                  .filter((m) => m.id !== editingMarker?.id)
+                  .map((m) => ({ id: m.id, position: m.position, title: m.name }))}
+                onClick={(item) => setEditingMarker(markers.find((m) => m.id === item.id) ?? null)}
+              />
+              <MarkerEditor
+                renderButton={renderMarkerButton}
+                renderControls={renderMarkerControls}
+                editingMarker={editingMarker}
+                dragEnabled={args.dragEnabled}
+                onMetadataRequest={(req) => {
+                  const name = window.prompt('Nome:', req.current.name ?? '') ?? '';
+                  if (!name) {
+                    req.onCancel();
+                    return;
+                  }
+                  req.onConfirm({
+                    name,
+                    icon: req.current.icon ?? 'default',
+                    color: req.current.color ?? '#1a73e8',
+                  });
+                }}
+                onAdd={(marker) => {
+                  setMarkers((prev) => [...prev, marker]);
+                  args.onAdd(marker);
+                }}
+                onUpdate={(marker) => {
+                  setMarkers((prev) => prev.map((m) => (m.id === marker.id ? marker : m)));
+                  args.onUpdate(marker);
+                }}
+                onDelete={(marker) => {
+                  setMarkers((prev) => prev.filter((m) => m.id !== marker.id));
+                  args.onDelete(marker);
+                }}
+                onEditEnd={() => {
+                  setEditingMarker(null);
+                  args.onEditEnd?.();
+                }}
+                onCancel={args.onCancel}
+              />
+            </GoogleMap>
+          </EditorSidebarLayout>
+        </EditorProvider>
       </GoogleMapsProvider>
     </>
   );
@@ -368,13 +394,33 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const CREATION_EXAMPLE_CODE = `function MarkerEditorDemo() {
+const EDITOR_SIDEBAR_LAYOUT_SNIPPET = `function EditorSidebarLayout({ children }) {
+  const { activeEditorKey } = useEditorContext();
+  const tools = useEditorTools();
+
+  const sidebarContent =
+    activeEditorKey === null
+      ? Array.from(tools.values()).map((tool, i) => <Fragment key={i}>{tool.button}</Fragment>)
+      : (tools.get(activeEditorKey)?.controls ?? null);
+
+  return (
+    <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ width: 260, overflowY: 'auto' }}>{sidebarContent}</div>
+      <div style={{ flex: 1 }}>{children}</div>
+    </div>
+  );
+}
+
+`;
+
+const CREATION_EXAMPLE_CODE = `${EDITOR_SIDEBAR_LAYOUT_SNIPPET}function MarkerEditorDemo() {
   const [markers, setMarkers] = useState<MarkerData[]>([]);
 
   return (
     <GoogleMapsProvider apiKey={apiKey}>
-      <MapEditorShell>
-        <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={14} mapId="YOUR_MAP_ID">
+      <EditorProvider>
+        <EditorSidebarLayout>
+          <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={14} mapId="YOUR_MAP_ID">
           <MarkerLayer items={markers.map((m) => ({ id: m.id, position: m.position, title: m.name }))} />
           <MarkerEditor
             renderButton={(state) => <button onClick={state.activate}>Add Marker</button>}
@@ -396,19 +442,21 @@ const CREATION_EXAMPLE_CODE = `function MarkerEditorDemo() {
             onDelete={(marker) => setMarkers((prev) => prev.filter((m) => m.id !== marker.id))}
           />
         </GoogleMap>
-      </MapEditorShell>
+        </EditorSidebarLayout>
+      </EditorProvider>
     </GoogleMapsProvider>
   );
 }`;
 
-const EDIT_ONLY_EXAMPLE_CODE = `function MarkerEditorDemo() {
+const EDIT_ONLY_EXAMPLE_CODE = `${EDITOR_SIDEBAR_LAYOUT_SNIPPET}function MarkerEditorDemo() {
   const [markers, setMarkers] = useState<MarkerData[]>(existingMarkers);
   const [editingMarker, setEditingMarker] = useState<MarkerData | null>(null);
 
   return (
     <GoogleMapsProvider apiKey={apiKey}>
-      <MapEditorShell>
-        <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={14} mapId="YOUR_MAP_ID">
+      <EditorProvider>
+        <EditorSidebarLayout>
+          <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={14} mapId="YOUR_MAP_ID">
           <MarkerLayer
             items={markers
               .filter((m) => m.id !== editingMarker?.id)
@@ -449,19 +497,21 @@ const EDIT_ONLY_EXAMPLE_CODE = `function MarkerEditorDemo() {
             onEditEnd={() => setEditingMarker(null)}
           />
         </GoogleMap>
-      </MapEditorShell>
+        </EditorSidebarLayout>
+      </EditorProvider>
     </GoogleMapsProvider>
   );
 }`;
 
-const PLAYGROUND_EXAMPLE_CODE = `function MarkerEditorDemo() {
+const PLAYGROUND_EXAMPLE_CODE = `${EDITOR_SIDEBAR_LAYOUT_SNIPPET}function MarkerEditorDemo() {
   const [markers, setMarkers] = useState<MarkerData[]>(existingMarkers);
   const [editingMarker, setEditingMarker] = useState<MarkerData | null>(null);
 
   return (
     <GoogleMapsProvider apiKey={apiKey}>
-      <MapEditorShell>
-        <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={14} mapId="YOUR_MAP_ID">
+      <EditorProvider>
+        <EditorSidebarLayout>
+          <GoogleMap center={{ lat: -23.5505, lng: -46.6333 }} zoom={14} mapId="YOUR_MAP_ID">
           <MarkerLayer
             items={markers
               .filter((m) => m.id !== editingMarker?.id)
@@ -506,7 +556,8 @@ const PLAYGROUND_EXAMPLE_CODE = `function MarkerEditorDemo() {
             onCancel={() => console.log('creation cancelled')}
           />
         </GoogleMap>
-      </MapEditorShell>
+        </EditorSidebarLayout>
+      </EditorProvider>
     </GoogleMapsProvider>
   );
 }`;

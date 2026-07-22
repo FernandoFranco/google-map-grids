@@ -5,9 +5,9 @@ import type {
 } from './MarkerEditor.types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { EditorButtonState } from '../MapEditorShell/EditorContext';
-import { useEditorContext } from '../MapEditorShell/useEditorContext';
-import { useEditorTool } from '../MapEditorShell/useEditorTool';
+import type { EditorButtonState } from '../EditorProvider/EditorContext';
+import { useEditorContext } from '../EditorProvider/useEditorContext';
+import { useEditorTool } from '../EditorProvider/useEditorTool';
 import { useMap } from '../GoogleMap/MapContext';
 import { useMarker } from '../../hooks/useMarker';
 

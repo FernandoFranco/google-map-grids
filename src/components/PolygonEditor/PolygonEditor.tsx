@@ -10,7 +10,7 @@ import {
   useDrawingEditorCore,
   type DrawingEditorControlsState,
 } from '../../hooks/useDrawingEditorCore';
-import { useEditorContext } from '../MapEditorShell/useEditorContext';
+import { useEditorContext } from '../EditorProvider/useEditorContext';
 
 export type {
   PolygonMetadata,
