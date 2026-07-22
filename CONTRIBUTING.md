@@ -52,8 +52,14 @@ Common types: `feat`, `fix`, `docs`, `refactor`, `chore`.
 ## Releasing
 
 1. Make sure `main` has green CI and everything you want in the release is already merged.
-2. `yarn version patch` (or `minor`/`major`) — bumps `package.json` and creates a `vX.Y.Z` commit + tag locally.
-3. `git push && git push --tags`.
+2. `yarn version patch` (or `minor`/`major`) — bumps the `version` field in `package.json`. Unlike `npm version`, Yarn's version plugin only edits `package.json`; it does **not** create a commit or tag on its own.
+3. Commit and tag that manually:
+   ```bash
+   git add package.json
+   git commit -m "chore(release): vX.Y.Z"
+   git tag vX.Y.Z
+   git push && git push --tags
+   ```
 4. On GitHub, go to **Releases → Draft a new release**, pick the `vX.Y.Z` tag, write release notes, and publish it.
 5. The "Publish to npm" workflow runs automatically, waits for approval in the `npm-publish` environment, then publishes via OIDC trusted publishing — no npm token is ever stored in GitHub.
 
