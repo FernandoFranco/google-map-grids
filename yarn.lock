@@ -1533,14 +1533,14 @@ __metadata:
   linkType: hard
 
 "@storybook/addon-a11y@npm:^10.5.3":
-  version: 10.5.3
-  resolution: "@storybook/addon-a11y@npm:10.5.3"
+  version: 10.5.4
+  resolution: "@storybook/addon-a11y@npm:10.5.4"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     axe-core: "npm:^4.2.0"
   peerDependencies:
-    storybook: ^10.5.3
-  checksum: 10c0/9363b8fc0e208c8ad13a71e2f8cb4b4a0046ebd9dc5edb875c65e13c4a4f50de923541c839442cf3d1e1649f82fc6d9ac4d80896d67dc0b0188af70cc51377e2
+    storybook: ^10.5.4
+  checksum: 10c0/dedc610be3c74d3cb182a745b16b87b42d66171e4bb9a3ef11721e315df087d7568fb77210b42260ac38cef4d757b0814fd423416c630067fbafc0c192cc5bb9
   languageName: node
   linkType: hard
 
