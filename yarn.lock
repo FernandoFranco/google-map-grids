@@ -4987,8 +4987,8 @@ __metadata:
   linkType: hard
 
 "storybook@npm:^10.5.3":
-  version: 10.5.3
-  resolution: "storybook@npm:10.5.3"
+  version: 10.5.4
+  resolution: "storybook@npm:10.5.4"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     "@storybook/icons": "npm:^2.0.2"
@@ -5020,7 +5020,7 @@ __metadata:
       optional: true
   bin:
     storybook: ./dist/bin/dispatcher.js
-  checksum: 10c0/85aab6431b42291cb6540e489eef32314396bcc12d688578633056f7e4b2b8c5141cd6f3e5c3532bc879b42115ccce03080ab5d06a9329f5a190999c824e07de
+  checksum: 10c0/e9ed4bb0d862c2a0fd58c9aee93ea556454defd9a793e4d54b3b9ba671d6b46aaf02c11fb33a412cfc0fafaa6fa62ec8d99a4aa837eb3ec28d4b6c0c8a964413
   languageName: node
   linkType: hard
 
